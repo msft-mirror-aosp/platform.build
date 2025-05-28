@@ -8,4 +8,4 @@
 # (like "CRB01").  It must be a single word, and is
 # capitalized by convention.
 
-BUILD_ID=AXA3.240506.005
+BUILD_ID=AXA3.240506.006
