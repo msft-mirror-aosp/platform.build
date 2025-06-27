@@ -7827,6 +7827,7 @@ $(INTERNAL_SDK_TARGET): $(deps)
 	        -I $(HOST_OUT) \
 	        -I $(TARGET_COMMON_OUT_ROOT) \
 	        -v "PLATFORM_NAME=$(PRIVATE_PLATFORM_NAME)" \
+	        -v "PLATFORM_SDK_API_VERSION=$(PLATFORM_SDK_VERSION_FULL)" \
 	        -v "OUT_DIR=$(OUT_DIR)" \
 	        -v "HOST_OUT=$(HOST_OUT)" \
 	        -v "TARGET_ARCH=$(TARGET_ARCH)" \
