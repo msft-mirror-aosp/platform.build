@@ -78,14 +78,28 @@ verifier-dir-name := android-cts-verifier
 verifier-dir := $(cts-dir)/$(verifier-dir-name)
 verifier-zip-name := $(verifier-dir-name).zip
 verifier-zip := $(cts-dir)/$(verifier-zip-name)
+cts-v-host-zip := $(HOST_OUT)/cts-v-host/android-cts-v-host.zip
 
 cts : $(verifier-zip)
+ifeq ($(wildcard cts/tools/cts-v-host/README),)
 $(verifier-zip): PRIVATE_DIR := $(cts-dir)
 $(verifier-zip): $(SOONG_ANDROID_CTS_VERIFIER_ZIP)
 	rm -rf $(PRIVATE_DIR)
 	mkdir -p $(PRIVATE_DIR)
 	unzip -q -d $(PRIVATE_DIR) $<
 	$(copy-file-to-target)
+else
+$(verifier-zip): PRIVATE_DIR := $(cts-dir)
+$(verifier-zip): PRIVATE_verifier_dir := $(verifier-dir)
+$(verifier-zip): PRIVATE_host_zip := $(cts-v-host-zip)
+$(verifier-zip): $(SOONG_ANDROID_CTS_VERIFIER_ZIP) $(cts-v-host-zip) $(SOONG_ZIP)
+	rm -rf $(PRIVATE_DIR)
+	mkdir -p $(PRIVATE_DIR)
+	unzip -q -d $(PRIVATE_DIR) $<
+	unzip -q -d $(PRIVATE_verifier_dir) $(PRIVATE_host_zip)
+	$(SOONG_ZIP) -d -o $@ -C $(PRIVATE_DIR) -D $(PRIVATE_verifier_dir)
+endif
+$(call dist-for-goals, cts, $(verifier-zip))
 
 # For producing CTS coverage reports.
 # Run "make cts-test-coverage" in the $ANDROID_BUILD_TOP directory.
@@ -372,3 +386,4 @@ verifier-dir-name :=
 verifier-dir :=
 verifier-zip-name :=
 verifier-zip :=
+cts-v-host-zip :=
