@@ -47,6 +47,7 @@ PRODUCT_PACKAGES += \
     bugreport \
     bugreportz \
     build_flag_system \
+    casefolding_remover \
     cgroups.json \
     charger \
     cmd \
