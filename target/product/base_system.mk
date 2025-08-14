@@ -264,7 +264,6 @@ PRODUCT_PACKAGES += \
     screencap \
     sdcard \
     secdiscard \
-    SecureElement \
     selinux_policy_system \
     sensorservice \
     service \
@@ -599,6 +598,15 @@ endif
 ifneq (,$(RELEASE_NATIVE_FRAMEWORK_PROTOTYPE))
     PRODUCT_PACKAGES += \
         zygote_next
+endif
+
+# Whether to use Java or new native (Rust) OMAPI implementation
+ifeq ($(RELEASE_NATIVE_OMAPI),true)
+    PRODUCT_PACKAGES += \
+        omapi
+else
+    PRODUCT_PACKAGES += \
+        SecureElement
 endif
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/runtime_libart.mk)
