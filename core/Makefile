@@ -7275,6 +7275,9 @@ endif # BOARD_USES_PVMFWIMAGE
 _symbols_zip_modules_symbols_files := $(foreach m,$(_symbols_zip_modules),$(ALL_MODULES.$(m).SYMBOLIC_OUTPUT_PATH))
 _symbols_zip_modules_mapping_files := $(foreach m,$(_symbols_zip_modules),$(ALL_MODULES.$(m).ELF_SYMBOL_MAPPING_PATH))
 
+.PHONY: symbols-zip
+symbols-zip: $(SYMBOLS_ZIP) $(SYMBOLS_MAPPING)
+
 .PHONY: symbols-files
 symbols-files: $(_symbols_zip_modules_symbols_files)
 droidcore-unbundled: symbols-files
