@@ -7268,6 +7268,10 @@ SYMBOLS_MAPPING := $(PRODUCT_OUT)/$(name)-symbols-mapping.textproto
 
 _symbols_zip_modules := $(call product-installed-modules,$(INTERNAL_PRODUCT))
 
+ifeq ($(BOARD_USES_PVMFWIMAGE),true)
+_symbols_zip_modules += pvmfw_bin
+endif # BOARD_USES_PVMFWIMAGE
+
 _symbols_zip_modules_symbols_files := $(foreach m,$(_symbols_zip_modules),$(ALL_MODULES.$(m).SYMBOLIC_OUTPUT_PATH))
 _symbols_zip_modules_mapping_files := $(foreach m,$(_symbols_zip_modules),$(ALL_MODULES.$(m).ELF_SYMBOL_MAPPING_PATH))
 
