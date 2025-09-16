@@ -8008,6 +8008,12 @@ endif # PACK_DESKTOP_FILESYSTEM_IMAGES
 # -----------------------------------------------------------------
 # Desktop pack recovery image hook.
 ifeq ($(BOARD_USES_DESKTOP_RECOVERY_IMAGE),true)
+ifeq ($(GENERATED_FW_IMAGE),)
+$(error The desktop recovery image requires AP and EC firmware. \
+	Please ensure RELEASE_FIRMWARE_$(call to-upper,$(TARGET_PRODUCT))_VERSION is set, \
+	or disable the recovery image by specifying \
+	PRODUCT_BUILD_DESKTOP_RECOVERY_IMAGE := false)
+endif # ($(GENERATED_FW_IMAGE),)
 PACK_RECOVERY_IMAGE_TARGET := $(PRODUCT_OUT)/android-desktop_recovery_image.bin
 PACK_RECOVERY_IMAGE_ARGS := --noarchive --recovery --firmware $(GENERATED_FW_IMAGE) --partition-image $(GENERATED_PARTITION_IMAGE)
 
