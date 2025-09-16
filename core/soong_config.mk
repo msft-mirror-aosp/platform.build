@@ -674,6 +674,8 @@ $(call add_json_map, PartitionVarsForSoongMigrationOnlyDoNotUse)
 
   $(call add_json_bool, MinimalFontFootprint, $(filter true,$(MINIMAL_FONT_FOOTPRINT)))
 
+  $(call add_json_list, CustomImagesPartitions, $(BOARD_CUSTOMIMAGES_PARTITION_LIST))
+
 $(call end_json_map)
 
 # For converting vintf_data
