@@ -83,6 +83,7 @@ $(call soong_config_set,art_module,art_debug_opt_flag,$(ART_DEBUG_OPT_FLAG))
 endif
 # The default value of ART_BUILD_HOST_DEBUG is true
 $(call soong_config_set_bool,art_module,art_build_host_debug,$(if $(filter false,$(ART_BUILD_HOST_DEBUG)),false,true))
+$(call soong_config_set_bool,art_module,art_use_simulator,$(ART_USE_SIMULATOR))
 
 # For chre
 $(call soong_config_set_bool,chre,chre_daemon_lpma_enabled,$(if $(filter true,$(CHRE_DAEMON_LPMA_ENABLED)),true,false))
