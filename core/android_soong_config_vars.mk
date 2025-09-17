@@ -84,6 +84,7 @@ $(call soong_config_set,art_module,art_debug_opt_flag,$(ART_DEBUG_OPT_FLAG))
 endif
 # The default value of ART_BUILD_HOST_DEBUG is true
 $(call soong_config_set_bool,art_module,art_build_host_debug,$(if $(filter false,$(ART_BUILD_HOST_DEBUG)),false,true))
+$(call soong_config_set_bool,art_module,art_use_simulator,$(ART_USE_SIMULATOR))
 
 # For ART_BUILD_TARGET in art/build/Android.common_build.mk
 # Sets 'art_module_build_target' to true unless both NDEBUG and DEBUG variables are explicitly 'false'.
