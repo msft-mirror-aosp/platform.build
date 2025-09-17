@@ -492,5 +492,5 @@ else
 $(call soong_config_set_bool,tradefed,use_prebuilt,false)
 endif
 
-# Add npuscheduler build flag to soong
-$(call soong_config_set,ANDROID,release_npuscheduler_module,$(RELEASE_NPUSCHEDULER_MODULE))
+# Add npumanager build flag to soong
+$(call soong_config_set,ANDROID,release_npumanager_module,$(RELEASE_NPUMANAGER_MODULE))
