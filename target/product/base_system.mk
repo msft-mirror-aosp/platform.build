@@ -426,6 +426,8 @@ PRODUCT_PACKAGES += \
 # are no longer supported for dessert upgrades).
 PRODUCT_PACKAGES += \
     hwservicemanager_compat_symlink_module \
+# Prevent timeouts to check availability of hwservicmanager during boot
+PRODUCT_SYSTEM_PROPERTIES += hwservicemanager.always_sets_disabled=true
 
 PRODUCT_PACKAGES_ARM64 := libclang_rt.hwasan \
  libclang_rt.hwasan.bootstrap \
