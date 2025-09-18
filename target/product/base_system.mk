@@ -385,13 +385,6 @@ ifeq ($(RELEASE_USE_WEBVIEW_BOOTSTRAP_MODULE),true)
         com.android.webview.bootstrap
 endif
 
-# Only add the jar when it is not in the Tethering module. Otherwise,
-# it will be added via com.android.tethering
-ifneq ($(RELEASE_MOVE_VCN_TO_MAINLINE),true)
-    PRODUCT_PACKAGES += \
-        framework-connectivity-b
-endif
-
 ifeq ($(RELEASE_TELEPHONY_MODULE),true)
     PRODUCT_PACKAGES += \
        com.android.telephonycore
