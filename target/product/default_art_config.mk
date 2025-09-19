@@ -149,6 +149,16 @@ ifneq (,$(RELEASE_RANGING_STACK))
     $(call soong_config_set,bootclasspath,release_ranging_stack,true)
 endif
 
+ifeq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
+    PRODUCT_APEX_BOOT_JARS += \
+        com.android.telephonycore:framework-telecom \
+
+else
+    PRODUCT_BOOT_JARS += \
+        framework-telecom \
+
+endif
+
 ifeq ($(RELEASE_TELEPHONY_MODULE),true)
     PRODUCT_APEX_BOOT_JARS += \
         com.android.telephonycore:framework-telephony \

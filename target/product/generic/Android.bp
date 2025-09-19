@@ -945,6 +945,11 @@ system_image_defaults {
                     "EyeDropper", // handheld_system (RELEASE_ACONFIG_INCLUDE_EYE_DROPPER_APP)
                 ],
                 default: [],
+            }) + select(release_flag("RELEASE_TELECOM_MAINLINE_MODULE"), {
+                true: [],
+                default: [
+                    "framework-telecom", // base_system
+                ],
             }),
         },
         prefer32: {

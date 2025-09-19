@@ -309,13 +309,10 @@ ifeq ($(RELEASE_CROSS_DEVICE_SYNC),true)
 endif
 
 # Once Telecom is APEX, we will consolidate all deps
-ifeq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
-  PRODUCT_PACKAGES += \
-      com.android.telecom \
-
-else
+ifneq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
   PRODUCT_PACKAGES += \
       telecom \
+      framework-telecom
 
 endif
 
