@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+use std::fmt;
 use std::str::FromStr;
 
 #[allow(dead_code)]
@@ -44,6 +45,12 @@ impl FromStr for SdkVersion {
             };
             Ok(SdkVersion { major, minor: 0 })
         }
+    }
+}
+
+impl fmt::Display for SdkVersion {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}.{}", self.major, self.minor)
     }
 }
 
@@ -80,5 +87,11 @@ mod tests {
         assert!("32".parse::<SdkVersion>().unwrap() == "32".parse::<SdkVersion>().unwrap());
         assert!("32".parse::<SdkVersion>().unwrap() == "32.0".parse::<SdkVersion>().unwrap());
         assert!("32.1".parse::<SdkVersion>().unwrap() == "32.1".parse::<SdkVersion>().unwrap());
+    }
+
+    #[test]
+    fn sdk_version_display() {
+        assert_eq!(format!("{}", "10".parse::<SdkVersion>().unwrap()), "10.0");
+        assert_eq!(format!("{}", "32.64".parse::<SdkVersion>().unwrap()), "32.64");
     }
 }
