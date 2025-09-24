@@ -141,4 +141,21 @@ mod tests {
             assert_ne!(value, "CANARY");
         }
     }
+
+    #[test]
+    fn test_prospective_sdk_version() {
+        // invariant: if set, RELEASE_PROSPECTIVE_SDK_VERSION_FULL is greater or equal to the
+        // current SDK version
+        for release_config in RELEASE_CONFIGS.flags.keys() {
+            let prospective_version =
+                &RELEASE_CONFIGS.flags[release_config]["RELEASE_PROSPECTIVE_SDK_VERSION_FULL"];
+            if prospective_version.is_empty() {
+                // skip this release config if it doesn't set RELEASE_PROSPECTIVE_SDK_VERSION_FULL
+                continue;
+            }
+            let prospective_version = prospective_version.parse::<SdkVersion>().unwrap();
+            let sdk_version = sdk_version(release_config);
+            assert!(prospective_version >= sdk_version, "in release config {release_config}, expected RELEASE_PROSPECTIVE_SDK_VERSION_FULL ({prospective_version}) to be greater or equal to the SDK version ({sdk_version})");
+        }
+    }
 }
