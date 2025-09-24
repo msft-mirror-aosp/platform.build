@@ -15,29 +15,31 @@
  */
 
 mod build_flags;
+mod sdk_version;
 
 #[cfg(test)]
 mod tests {
     use crate::build_flags::{ReleaseConfigs, FLAGS_WE_CARE_ABOUT};
+    use crate::sdk_version::SdkVersion;
     use std::sync::LazyLock;
 
     // the subset of build flags relevant for SDK finalization
     static RELEASE_CONFIGS: LazyLock<ReleaseConfigs> = LazyLock::new(ReleaseConfigs::init);
 
-    fn sdk_version(release_config: &str) -> f32 {
+    fn sdk_version(release_config: &str) -> SdkVersion {
         // use SDK_INT_FULL if set, otherwise fall back to SDK_INT
         let s = &RELEASE_CONFIGS.flags[release_config]["RELEASE_PLATFORM_SDK_VERSION_FULL"];
         if !s.is_empty() {
-            s.parse::<f32>().unwrap_or_else(|_| {
+            s.parse::<SdkVersion>().unwrap_or_else(|_| {
                 panic!(
-                    "failed to parse RELEASE_PLATFORM_SDK_VERSION_FULL for {release_config} ({s}) as f32"
+                    "failed to parse RELEASE_PLATFORM_SDK_VERSION_FULL for {release_config} ({s}) as SdkVersion"
                 )
             })
         } else {
             let s = &RELEASE_CONFIGS.flags[release_config]["RELEASE_PLATFORM_SDK_VERSION"];
-            s.parse::<f32>().unwrap_or_else(|_| {
+            s.parse::<SdkVersion>().unwrap_or_else(|_| {
                 panic!(
-                    "failed to parse RELEASE_PLATFORM_SDK_VERSION for {release_config} ({s}) as f32"
+                    "failed to parse RELEASE_PLATFORM_SDK_VERSION for {release_config} ({s}) as SdkVersion"
                 )
             })
         }
