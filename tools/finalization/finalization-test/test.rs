@@ -147,8 +147,8 @@ mod tests {
         // invariant: if set, RELEASE_PROSPECTIVE_SDK_VERSION_FULL is greater or equal to the
         // current SDK version
         for release_config in RELEASE_CONFIGS.flags.keys() {
-            let prospective_version =
-                &RELEASE_CONFIGS.flags[release_config]["RELEASE_PROSPECTIVE_SDK_VERSION_FULL"];
+            let prospective_version = &RELEASE_CONFIGS.flags[release_config]
+                ["RELEASE_PLATFORM_PROSPECTIVE_SDK_VERSION_FULL"];
             if prospective_version.is_empty() {
                 // skip this release config if it doesn't set RELEASE_PROSPECTIVE_SDK_VERSION_FULL
                 continue;
