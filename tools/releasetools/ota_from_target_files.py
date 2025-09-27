@@ -142,6 +142,9 @@ A/B OTA specific options
   --disable_fec_computation
       Disable the on device FEC data computation for incremental updates. OTA will be larger but installation will be faster.
 
+  --disable_verity_computation
+      Disable the on device verity data computation for incremental updates. OTA will be larger but installation will be faster.
+
   --include_secondary
       Additionally include the payload for secondary slot images (default:
       False). Only meaningful when generating A/B OTAs.
