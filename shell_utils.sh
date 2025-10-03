@@ -153,7 +153,9 @@ function setup_cog_symlink() {
     # display any messages to the user. If it isn't installed, then message the
     # user to install it, but don't stop the script.
     if ! command -v cartfs &> /dev/null; then
-      echo "Install CartFS for more reliable builds. See go/cartfs-with-cog for installation instructions."
+      echo "***"
+      echo "🚨 Install CartFS for more reliable builds. See go/cartfs-with-cog for installation instructions! 🚨"
+      echo "***"
     fi
   fi
 
