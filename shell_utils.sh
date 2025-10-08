@@ -348,6 +348,11 @@ function setup_cartfs_incremental_build() {
     return
   fi
 
+  local link_destination=$1
+  if [[ -d "$link_destination" ]]; then
+    return
+  fi
+
   local cartfs_endpoint="127.0.0.1:65001"
   local cartfs_rpc_copy_directory="cartfs.Cartfs.CopyDirectory"
 
@@ -368,7 +373,6 @@ function setup_cartfs_incremental_build() {
 
   echo "Searching for recent build outputs in CartFS for incremental builds"
 
-  local link_destination=$1
   local cartfs_mount_point=$2
   local top=$(gettop)
   local repo="$(basename "${top}")"
