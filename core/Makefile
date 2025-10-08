@@ -1915,29 +1915,6 @@ kernel_notice_file := $(TARGET_OUT_NOTICE_FILES)/src/kernel.txt
 # need no associated notice file on the device UI.
 exclude_target_dirs := apex
 
-# target_notice_file_xml := $(TARGET_OUT_INTERMEDIATES)/NOTICE.xml
-
-target_vendor_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR.txt
-target_vendor_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR.xml.gz
-
-target_product_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_PRODUCT.txt
-target_product_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_PRODUCT.xml.gz
-
-target_system_ext_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_EXT.txt
-target_system_ext_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_EXT.xml.gz
-
-target_odm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM.txt
-target_odm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM.xml.gz
-
-target_vendor_dlkm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR_DLKM.txt
-target_vendor_dlkm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR_DLKM.xml.gz
-
-target_odm_dlkm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM_DLKM.txt
-target_odm_dlkm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM_DLKM.xml.gz
-
-target_system_dlkm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_DLKM.txt
-target_system_dlkm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_DLKM.xml.gz
-
 ifeq (,$(DISABLE_NOTICE_XML_GENERATION))
   target_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE.xml.gz
   installed_notice_html_or_xml_gz := $(TARGET_OUT)/etc/NOTICE.xml.gz
