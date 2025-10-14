@@ -719,6 +719,7 @@ system_image_defaults {
     }) + select(release_flag("RELEASE_MEMORY_MANAGEMENT_DAEMON"), {
         true: [
             "mm_daemon", // base_system (RELEASE_MEMORY_MANAGEMENT_DAEMON)
+            "mm_daemon_setup", // base_system (RELEASE_MEMORY_MANAGEMENT_DAEMON)
         ],
         default: [
             "init-mmd-prop.rc", // base_system
