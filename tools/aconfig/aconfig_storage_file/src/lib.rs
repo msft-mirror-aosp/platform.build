@@ -201,6 +201,9 @@ pub enum AconfigStorageError {
     #[error("failed to create file")]
     FileCreationFail(#[source] anyhow::Error),
 
+    #[error("failed to write to file")]
+    FileWriteFail(#[source] anyhow::Error),
+
     #[error("invalid stored flag type")]
     InvalidStoredFlagType(#[source] anyhow::Error),
 

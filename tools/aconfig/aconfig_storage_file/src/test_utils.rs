@@ -195,7 +195,8 @@ pub fn write_bytes_to_temp_file(bytes: &[u8]) -> Result<NamedTempFile, AconfigSt
     let mut file = NamedTempFile::new().map_err(|_| {
         AconfigStorageError::FileCreationFail(anyhow!("Failed to create temp file"))
     })?;
-    let _ = file.write_all(bytes);
+    file.write_all(bytes)
+        .map_err(|_| AconfigStorageError::FileWriteFail(anyhow!("Failed to write to temp file")))?;
     Ok(file)
 }
 
