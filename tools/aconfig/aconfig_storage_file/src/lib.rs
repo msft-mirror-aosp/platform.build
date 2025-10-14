@@ -223,8 +223,7 @@ pub(crate) fn get_bucket_index(val: &[u8], num_buckets: u32) -> u32 {
     let mut s = SipHasher13::new();
     s.write(val);
     s.write_u8(0xff);
-    let ret = (s.finish() % num_buckets as u64) as u32;
-    ret
+    (s.finish() % num_buckets as u64) as u32
 }
 
 /// Read and parse bytes as u8
@@ -498,7 +497,7 @@ pub fn list_flags_cxx(
         },
         Err(errmsg) => ffi::ListFlagValueResultCXX {
             query_success: false,
-            error_message: format!("{:?}", errmsg),
+            error_message: format!("{errmsg:?}"),
             flags: Vec::new(),
         },
     }
@@ -519,7 +518,7 @@ pub fn list_flags_with_info_cxx(
         },
         Err(errmsg) => ffi::ListFlagValueAndInfoResultCXX {
             query_success: false,
-            error_message: format!("{:?}", errmsg),
+            error_message: format!("{errmsg:?}"),
             flags: Vec::new(),
         },
     }
