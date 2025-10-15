@@ -1108,6 +1108,9 @@ system_image_defaults {
             ],
         },
     },
+    // Do not use a fixed timestamp.
+    // This prevents a full push on the first adb sync.
+    no_use_fixed_timestamp: true,
 }
 
 android_system_image {
