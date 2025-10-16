@@ -962,11 +962,6 @@ system_image_defaults {
                 default: [
                     "framework-telecom", // base_system
                 ],
-            }) + select(release_flag("RELEASE_NPUMANAGER_MODULE"), {
-                true: [
-                    "framework-npumanager",
-                ],
-                default: [],
             }),
         },
         prefer32: {
