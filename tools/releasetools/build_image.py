@@ -380,6 +380,28 @@ def BuildImageMkfs(in_dir, prop_dict, out_file, target_out, fs_config):
       manual_sparse = True
 
     run_fsck = RunErofsFsck
+  elif fs_type.startswith("squash"):
+    build_command = ["mksquashfsimage"]
+    build_command.extend([in_dir, out_file])
+    if "squashfs_sparse_flag" in prop_dict and not disable_sparse:
+      build_command.extend([prop_dict["squashfs_sparse_flag"]])
+    build_command.extend(["-m", prop_dict["mount_point"]])
+    if target_out:
+      build_command.extend(["-d", target_out])
+    if fs_config:
+      build_command.extend(["-C", fs_config])
+    if "selinux_fc" in prop_dict:
+      build_command.extend(["-c", prop_dict["selinux_fc"]])
+    if "block_list" in prop_dict:
+      build_command.extend(["-B", prop_dict["block_list"]])
+    if "squashfs_block_size" in prop_dict:
+      build_command.extend(["-b", prop_dict["squashfs_block_size"]])
+    if "squashfs_compressor" in prop_dict:
+      build_command.extend(["-z", prop_dict["squashfs_compressor"]])
+    if "squashfs_compressor_opt" in prop_dict:
+      build_command.extend(["-zo", prop_dict["squashfs_compressor_opt"]])
+    if prop_dict.get("squashfs_disable_4k_align") == "true":
+      build_command.extend(["-a"])
   elif fs_type.startswith("f2fs"):
     build_command = ["mkf2fsuserimg"]
     build_command.extend([out_file, prop_dict["image_size"]])
@@ -704,6 +726,7 @@ def ImagePropFromGlobalDict(glob_dict, mount_point):
       "erofs_share_dup_blocks",
       "erofs_sparse_flag",
       "erofs_use_legacy_compression",
+      "squashfs_sparse_flag",
       "system_f2fs_compress",
       "system_f2fs_sldc_flags",
       "f2fs_sparse_flag",
@@ -760,6 +783,10 @@ def ImagePropFromGlobalDict(glob_dict, mount_point):
       (True, "{}_f2fs_sldc_flags", "f2fs_sldc_flags"),
       (True, "{}_f2fs_blocksize", "f2fs_block_size"),
       (True, "{}_reserved_size", "partition_reserved_size"),
+      (True, "{}_squashfs_block_size", "squashfs_block_size"),
+      (True, "{}_squashfs_compressor", "squashfs_compressor"),
+      (True, "{}_squashfs_compressor_opt", "squashfs_compressor_opt"),
+      (True, "{}_squashfs_disable_4k_align", "squashfs_disable_4k_align"),
       (True, "{}_verity_block_device", "verity_block_device"),
   )
 
