@@ -595,7 +595,8 @@ endif
 PRODUCT_PACKAGES_DEBUG_JAVA_COVERAGE := \
     libdumpcoverage
 
-PRODUCT_PACKAGES += preloaded-classes
+PRODUCT_COPY_FILES += $(call add-to-product-copy-files-if-exists,\
+    frameworks/base/config/preloaded-classes:system/etc/preloaded-classes)
 
 # Enable dirty image object binning to reduce dirty pages in the image.
 PRODUCT_PACKAGES += dirty-image-objects
