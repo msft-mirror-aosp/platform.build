@@ -1,5 +1,6 @@
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
+    default_team: "trendy_team_android_core_experiments",
 }
 
 rust_defaults {
@@ -28,7 +29,6 @@ rust_binary_host {
 
 rust_test_host {
     name: "convert_mainline_beta_namespace_config.test",
-    team: "trendy_team_android_core_experiments",
     defaults: ["convert_mainline_beta_namespace_config.defaults"],
     test_suites: ["general-tests"],
     srcs: ["src/convert_mainline_beta_namespace_config.rs"],
