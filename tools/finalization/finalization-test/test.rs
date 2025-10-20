@@ -176,8 +176,7 @@ mod tests {
             if codename == "REL" {
                 assert_eq!(preview_sdk_int, 0, "in release config {release_config}, expected RELEASE_PLATFORM_PREVIEW_SDK_INT to be 0 but was {preview_sdk_int}");
             } else {
-                assert_ne!(
-                                preview_sdk_int, 0, "in release config {release_config}, expected RELEASE_PLATFORM_PREVIEW_SDK_INT to be non-zero but was 0");
+                assert_ne!(preview_sdk_int, 0, "in release config {release_config}, expected RELEASE_PLATFORM_PREVIEW_SDK_INT to be non-zero but was 0");
             }
         }
     }
