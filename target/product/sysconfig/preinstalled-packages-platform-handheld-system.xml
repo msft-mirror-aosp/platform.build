@@ -74,4 +74,10 @@
         <install-in user-type="FULL" />
         <install-in user-type="android.os.usertype.profile.MANAGED" />
     </install-in-user-type>
+
+    <!-- Shared storage backup agent used by adb backup (SharedStorageBackup) -->
+    <install-in-user-type package="com.android.sharedstoragebackup">
+        <install-in user-type="FULL" />
+        <install-in user-type="android.os.usertype.profile.MANAGED" />
+    </install-in-user-type>
 </config>
