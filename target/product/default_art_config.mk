@@ -85,6 +85,7 @@ PRODUCT_APEX_BOOT_JARS := \
     com.android.sdkext:framework-sdkextensions \
     com.android.tethering:framework-connectivity \
     com.android.tethering:framework-connectivity-t \
+    com.android.tethering:framework-connectivity-b \
     com.android.tethering:framework-tethering \
     com.android.uwb:framework-uwb \
     com.android.virt:framework-virtualization \
@@ -116,7 +117,11 @@ endif
 # When we release NSC in Conscrypt.
 ifeq ($(RELEASE_CONSCRYPT_NSC),true)
     PRODUCT_APEX_BOOT_JARS += \
-    com.android.conscrypt:framework-conscrypt-nsc \
+        com.android.conscrypt:framework-conscrypt-nsc \
+
+else
+    PRODUCT_BOOT_JARS += \
+        framework-network-security-config \
 
 endif
 
@@ -147,14 +152,13 @@ ifneq (,$(RELEASE_RANGING_STACK))
     $(call soong_config_set,bootclasspath,release_ranging_stack,true)
 endif
 
-# Check if VCN should be built into the tethering module or not
-ifeq ($(RELEASE_MOVE_VCN_TO_MAINLINE),true)
+ifeq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
     PRODUCT_APEX_BOOT_JARS += \
-        com.android.tethering:framework-connectivity-b \
+        com.android.telephonycore:framework-telecom \
 
 else
     PRODUCT_BOOT_JARS += \
-        framework-connectivity-b \
+        framework-telecom \
 
 endif
 
@@ -237,6 +241,11 @@ endif
 ifneq (,$(RELEASE_RANGING_STACK))
     PRODUCT_APEX_STANDALONE_SYSTEM_SERVER_JARS += \
         com.android.uwb:service-ranging
+endif
+
+ifeq ($(RELEASE_UPROBESTATS_BRIDGE_SERVICE),true)
+    PRODUCT_APEX_STANDALONE_SYSTEM_SERVER_JARS += \
+        com.android.uprobestats:service-uprobestats-bridge
 endif
 
 # Overrides the (apex, jar) pairs above when determining the on-device location. The format is:

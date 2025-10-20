@@ -7,17 +7,8 @@ $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make pa
 LOCAL_PATH := $(BUILD_SYSTEM)
 
 SYSTEM_NOTICE_DEPS :=
-VENDOR_NOTICE_DEPS :=
 UNMOUNTED_NOTICE_DEPS :=
 UNMOUNTED_NOTICE_VENDOR_DEPS :=
-ODM_NOTICE_DEPS :=
-OEM_NOTICE_DEPS :=
-PRODUCT_NOTICE_DEPS :=
-SYSTEM_EXT_NOTICE_DEPS :=
-VENDOR_DLKM_NOTICE_DEPS :=
-ODM_DLKM_NOTICE_DEPS :=
-SYSTEM_DLKM_NOTICE_DEPS :=
-
 
 # IMAGES_TO_BUILD is a list of the partition .img files that will be created.
 IMAGES_TO_BUILD:=
@@ -1123,18 +1114,6 @@ SYSTEM_DLKM_MODULE_PATTERNS := $(foreach path,$(BOARD_SYSTEM_KERNEL_MODULES),%/$
 
 endif
 
-# BOARD_KERNEL_MODULES_16K might contain duplicate modules under different path.
-# for example, foo/bar/wifi.ko and foo/wifi.ko . To avoid build issues, de-dup
-# module list on basename first.
-BOARD_KERNEL_MODULES_16K := $(foreach \
-  pattern,\
-  $(sort $(foreach \
-    path,\
-    $(BOARD_KERNEL_MODULES_16K),\
-    %/$(notdir $(path)))\
-  ),\
-  $(firstword $(filter $(pattern),$(BOARD_KERNEL_MODULES_16K))) \
-)
 # For non-GKI modules, strip them before install. As debug symbols take up
 # significant space.
 $(foreach \
@@ -1671,8 +1650,6 @@ $(INSTALLED_VENDOR_RAMDISK_TARGET): $(INTERNAL_VENDOR_RAMDISK_TARGET)
 $(call declare-1p-container,$(INSTALLED_VENDOR_RAMDISK_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_RAMDISK_TARGET),$(INTERNAL_VENDOR_RAMDISK_TARGET),$(PRODUCT_OUT)/:/)
 
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDOR_RAMDISK_TARGET)
-
 INSTALLED_FILES_FILE_VENDOR_RAMDISK := $(PRODUCT_OUT)/installed-files-vendor-ramdisk.txt
 INSTALLED_FILES_JSON_VENDOR_RAMDISK := $(INSTALLED_FILES_FILE_VENDOR_RAMDISK:.txt=.json)
 $(INSTALLED_FILES_FILE_VENDOR_RAMDISK): .KATI_IMPLICIT_OUTPUTS := $(INSTALLED_FILES_JSON_VENDOR_RAMDISK)
@@ -1777,7 +1754,6 @@ endif
 
 $(call declare-1p-container,$(INSTALLED_VENDOR_BOOTIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_BOOTIMAGE_TARGET),$(INTERNAL_VENDOR_RAMDISK_TARGET) $(INSTALLED_DTB_IMAGE_TARGET) $(INTERNAL_VENDOR_RAMDISK_FRAGMENT_TARGETS) $(INTERNAL_VENDOR_BOOTCONDIG_TARGET),$(PRODUCT_OUT)/:/)
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDOR_BOOTIMAGE_TARGET)
 
 else # BUILDING_VENDOR_BOOT_IMAGE not defined, use prebuilt image
 
@@ -1878,34 +1854,7 @@ endif # BUILDING_VENDOR_KERNEL_BOOT_IMAGE
 
 # -----------------------------------------------------------------
 # NOTICE files
-#
-# We are required to publish the licenses for all code under BSD, GPL and
-# Apache licenses (and possibly other more exotic ones as well). We err on the
-# side of caution, so the licenses for other third-party code are included here
-# too.
-#
-# This needs to be before the systemimage rules, because it adds to
-# ALL_DEFAULT_INSTALLED_MODULES, which those use to pick which files
-# go into the systemimage.
-
 .PHONY: notice_files
-
-# Convert license metadata into xml notice file.
-# $(1) - Output target notice filename
-# $(2) - Product name
-# $(3) - File title
-# $(4) - License metadata file roots
-# $(5) - Prefixes to strip
-#
-define xml-notice-rule
-$(1): PRIVATE_PRODUCT := $(2)
-$(1): PRIVATE_MESSAGE := $(3)
-$(1): PRIVATE_DEPS := $(call corresponding-license-metadata,$(4))
-$(1): $(call corresponding-license-metadata,$(4)) $(XMLNOTICE) $(BUILD_SYSTEM)/Makefile
-	OUT_DIR=$(OUT_DIR) $(XMLNOTICE) -o $$@ -product=$$(PRIVATE_PRODUCT) -title=$$(PRIVATE_MESSAGE) $(foreach prefix, $(5), -strip_prefix=$(prefix)) $$(PRIVATE_DEPS)
-
-notice_files: $(1)
-endef
 
 # Convert license metadata into text notice file.
 # $(1) - Output target notice filename
@@ -1939,7 +1888,7 @@ $(1): $(call corresponding-license-metadata,$(4)) $(HTMLNOTICE) $(BUILD_SYSTEM)/
 notice_files: $(1)
 endef
 
-$(KATI_obsolete_var combine-notice-files, To create notice files use xml-notice-rule, html-notice-rule, or text-notice-rule.)
+$(KATI_obsolete_var combine-notice-files, To create notice files use html-notice-rule, or text-notice-rule.)
 
 # Notice file logic isn't relevant for TARGET_BUILD_APPS
 ifndef TARGET_BUILD_APPS
@@ -1953,29 +1902,6 @@ kernel_notice_file := $(TARGET_OUT_NOTICE_FILES)/src/kernel.txt
 # reasons--not to be flashed onto any device. Targets under these directories
 # need no associated notice file on the device UI.
 exclude_target_dirs := apex
-
-# target_notice_file_xml := $(TARGET_OUT_INTERMEDIATES)/NOTICE.xml
-
-target_vendor_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR.txt
-target_vendor_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR.xml.gz
-
-target_product_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_PRODUCT.txt
-target_product_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_PRODUCT.xml.gz
-
-target_system_ext_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_EXT.txt
-target_system_ext_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_EXT.xml.gz
-
-target_odm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM.txt
-target_odm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM.xml.gz
-
-target_vendor_dlkm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR_DLKM.txt
-target_vendor_dlkm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_VENDOR_DLKM.xml.gz
-
-target_odm_dlkm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM_DLKM.txt
-target_odm_dlkm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_ODM_DLKM.xml.gz
-
-target_system_dlkm_notice_file_txt := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_DLKM.txt
-target_system_dlkm_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE_SYSTEM_DLKM.xml.gz
 
 ifeq (,$(DISABLE_NOTICE_XML_GENERATION))
   target_notice_file_xml_gz := $(TARGET_OUT_INTERMEDIATES)/NOTICE.xml.gz
@@ -1998,22 +1924,6 @@ else
   installed_odm_dlkm_notice_xml_gz :=
   installed_system_dlkm_notice_xml_gz :=
 endif
-
-ALL_INSTALLED_NOTICE_FILES := \
-  $(installed_notice_html_or_xml_gz) \
-  $(installed_vendor_notice_xml_gz) \
-  $(installed_product_notice_xml_gz) \
-  $(installed_system_ext_notice_xml_gz) \
-  $(installed_odm_notice_xml_gz) \
-  $(installed_vendor_dlkm_notice_xml_gz) \
-  $(installed_odm_dlkm_notice_xml_gz) \
-  $(installed_system_dlkm_notice_xml_gz) \
-
-# $1 installed file path, e.g. out/target/product/vsoc_x86_64/system_ext/etc/NOTICE.xml.gz
-define is-notice-file
-$(if $(filter true,$(PRODUCT_USE_SOONG_NOTICE_XML)),, \
-  $(if $(findstring $1,$(ALL_INSTALLED_NOTICE_FILES)),Y))
-endef
 
 # Notice files are copied to TARGET_OUT_NOTICE_FILES as a side-effect of their module
 # being built. A notice xml file must depend on all modules that could potentially
@@ -3131,8 +3041,6 @@ $(INSTALLED_VENDOR_DEBUG_RAMDISK_TARGET): $(INTERNAL_VENDOR_DEBUG_RAMDISK_TARGET
 $(call declare-1p-container,$(INSTALLED_VENDOR_DEBUG_RAMDISK_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_DEBUG_RAMDISK_TARGET),$(INTERNAL_VENDOR_DEBUG_RAMDISK_TARGET),$(PRODUCT_OUT)/:/)
 
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDOR_DEBUG_RAMDISK_TARGET)
-
 # -----------------------------------------------------------------
 # vendor_boot-debug.img.
 INSTALLED_VENDOR_DEBUG_BOOTIMAGE_TARGET := $(PRODUCT_OUT)/vendor_boot-debug.img
@@ -3174,28 +3082,10 @@ endif
 $(call declare-1p-container,$(INSTALLED_VENDOR_DEBUG_BOOTIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_DEBUG_BOOTIMAGE_TARGET),$(INTERNAL_VENDOR_DEBUG_RAMDISK_TARGET),$(PRODUCT_OUT)/:/)
 
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDOR_DEBUG_BOOTIMAGE_TARGET)
-
 endif # BUILDING_DEBUG_VENDOR_BOOT_IMAGE
-
-# Appends a few test harness specific properties into the adb_debug.prop.
-ADDITIONAL_TEST_HARNESS_PROPERTIES := ro.audio.silent=1
-ADDITIONAL_TEST_HARNESS_PROPERTIES += ro.test_harness=1
 
 INTERNAL_DEBUG_RAMDISK_ADB_DEBUG_PROP_TARGET := $(strip $(filter $(TARGET_DEBUG_RAMDISK_OUT)/adb_debug.prop,$(INTERNAL_DEBUG_RAMDISK_FILES)))
 INTERNAL_TEST_HARNESS_RAMDISK_ADB_DEBUG_PROP_TARGET := $(TARGET_TEST_HARNESS_RAMDISK_OUT)/adb_debug.prop
-$(INTERNAL_TEST_HARNESS_RAMDISK_ADB_DEBUG_PROP_TARGET): $(INTERNAL_DEBUG_RAMDISK_ADB_DEBUG_PROP_TARGET)
-	$(hide) rm -f $@
-	$(hide) mkdir -p $(dir $@)
-ifdef INTERNAL_DEBUG_RAMDISK_ADB_DEBUG_PROP_TARGET
-	$(hide) cp $(INTERNAL_DEBUG_RAMDISK_ADB_DEBUG_PROP_TARGET) $@
-endif
-	$(hide) echo "" >> $@
-	$(hide) echo "#" >> $@
-	$(hide) echo "# ADDITIONAL TEST HARNESS PROPERTIES" >> $@
-	$(hide) echo "#" >> $@
-	$(hide) $(foreach line,$(ADDITIONAL_TEST_HARNESS_PROPERTIES), \
-	          echo "$(line)" >> $@;)
 
 $(call declare-1p-target,$(INTERNAL_TEST_HARNESS_RAMDISK_ADB_DEBUG_PROP_TARGET))
 
@@ -3312,8 +3202,6 @@ $(INSTALLED_VENDOR_TEST_HARNESS_RAMDISK_TARGET): $(INTERNAL_VENDOR_TEST_HARNESS_
 $(call declare-1p-container,$(INSTALLED_VENDOR_TEST_HARNESS_RAMDISK_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_TEST_HARNESS_RAMDISK_TARGET),$(INTERNAL_VENDOR_TEST_HARNESS_RAMDISK_TARGET),$(PRODUCT_OUT)/:/)
 
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDOR_TEST_HARNESS_RAMDISK_TARGET)
-
 # -----------------------------------------------------------------
 # vendor_boot-test-harness.img.
 INSTALLED_VENDOR_TEST_HARNESS_BOOTIMAGE_TARGET := $(PRODUCT_OUT)/vendor_boot-test-harness.img
@@ -3333,8 +3221,6 @@ $(INSTALLED_VENDOR_TEST_HARNESS_BOOTIMAGE_TARGET): $(INTERNAL_VENDOR_RAMDISK_FRA
 
 $(call declare-1p-container,$(INSTALLED_VENDOR_TEST_HARNESS_BOOTIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_TEST_HARNESS_BOOTIMAGE_TARGET),$(INTERNAL_VENDOR_TEST_HARNESS_RAMDISK_TARGET),$(PRODUCT_OUT)/:/)
-
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDOR_TEST_HARNESS_BOOTIMAGE_TARGET)
 
 endif # BUILDING_DEBUG_VENDOR_BOOT_IMAGE
 
@@ -4175,8 +4061,6 @@ $(INSTALLED_VENDORIMAGE_TARGET): \
     $(vendorimage_intermediates)/file_list.txt
 	$(build-vendorimage-target)
 
-VENDOR_NOTICE_DEPS += $(INSTALLED_VENDORIMAGE_TARGET)
-
 $(call declare-container-license-metadata,$(INSTALLED_VENDORIMAGE_TARGET),legacy_proprietary,proprietary,,"Vendor Image",vendor)
 $(call declare-container-license-deps,$(INSTALLED_VENDORIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_VENDORIMAGE_FILES) $(RECOVERY_FROM_BOOT_PATH),$(PRODUCT_OUT)/:/)
 
@@ -4262,8 +4146,6 @@ $(INSTALLED_PRODUCTIMAGE_TARGET): \
     $(productimage_intermediates)/file_list.txt
 	$(build-productimage-target)
 
-PRODUCT_NOTICE_DEPS += $(INSTALLED_PRODUCTIMAGE_TARGET)
-
 $(call declare-1p-container,$(INSTALLED_PRODUCTIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_PRODUCTIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_PRODUCTIMAGE_FILES) $(INSTALLED_FILES_FILE_PRODUCT),$(PRODUCT_OUT)/:/)
 
@@ -4331,8 +4213,6 @@ $(INSTALLED_SYSTEM_EXTIMAGE_TARGET): \
     $(INSTALLED_FILES_FILE_SYSTEM_EXT) \
     $(system_extimage_intermediates)/file_list.txt
 	$(build-system_extimage-target)
-
-SYSTEM_EXT_NOTICE_DEPS += $(INSTALLED_SYSTEM_EXTIMAGE_TARGET)
 
 $(call declare-1p-container,$(INSTALLED_SYSTEM_EXTIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_SYSTEM_EXTIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_SYSTEM_EXTIMAGE_FILES) $(INSTALLED_FILES_FILE_SYSTEM_EXT),$(PRODUCT_OUT)/:/)
@@ -4421,8 +4301,6 @@ $(INSTALLED_ODMIMAGE_TARGET): \
     $(odmimage_intermediates)/file_list.txt
 	$(build-odmimage-target)
 
-ODM_NOTICE_DEPS += $(INSTALLED_ODMIMAGE_TARGET)
-
 $(call declare-1p-container,$(INSTALLED_ODMIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_ODMIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_ODMIMAGE_FILES) $(INSTALLED_FILES_FILE_ODM),$(PRODUCT_OUT)/:/)
 
@@ -4490,8 +4368,6 @@ $(INSTALLED_VENDOR_DLKMIMAGE_TARGET): \
     $(vendor_dlkmimage_intermediates)/file_list.txt
 	$(build-vendor_dlkmimage-target)
 
-VENDOR_DLKM_NOTICE_DEPS += $(INSTALLED_VENDOR_DLKMIMAGE_TARGET)
-
 $(call declare-1p-container,$(INSTALLED_VENDOR_DLKMIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_VENDOR_DLKMIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_VENDOR_DLKMIMAGE_FILES) $(INSTALLED_FILES_FILE_VENDOR_DLKM),$(PRODUCT_OUT)/:/)
 
@@ -4558,8 +4434,6 @@ $(INSTALLED_ODM_DLKMIMAGE_TARGET): \
     $(INSTALLED_FILES_FILE_ODM_DLKM) \
     $(odm_dlkmimage_intermediates)/file_list.txt
 	$(build-odm_dlkmimage-target)
-
-ODM_DLKM_NOTICE_DEPS += $(INSTALLED_ODM_DLKMIMAGE_TARGET)
 
 $(call declare-1p-container,$(INSTALLED_ODM_DLKMIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_ODM_DLKMIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_ODM_DLKMIMAGE_FILES) $(INSTALLED_FILES_FILE_ODM_DLKM),$(PRODUCT_OUT)/:/)
@@ -4630,8 +4504,6 @@ $(INSTALLED_SYSTEM_DLKMIMAGE_TARGET): \
     $(system_dlkmimage_intermediates)/file_list.txt
 	$(build-system_dlkmimage-target)
 
-SYSTEM_DLKM_NOTICE_DEPS += $(INSTALLED_SYSTEM_DLKMIMAGE_TARGET)
-
 $(call declare-1p-container,$(INSTALLED_SYSTEM_DLKMIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_SYSTEM_DLKMIMAGE_TARGET),$(INTERNAL_USERIMAGES_DEPS) $(INTERNAL_SYSTEM_DLKMIMAGE_FILES) $(INSTALLED_FILES_FILE_SYSTEM_DLKM),$(PRODUCT_OUT)/:/)
 
@@ -4659,25 +4531,6 @@ INSTALLED_PVMFW_BINARY_TARGET := $(call module-target-built-files,pvmfw_bin)
 INTERNAL_PVMFWIMAGE_FILES := $(call module-target-built-files,pvmfw_img)
 INTERNAL_PVMFW_EMBEDDED_AVBKEY := $(call module-target-built-files,pvmfw_embedded_key_pub_bin)
 INTERNAL_PVMFW_SYMBOL := $(TARGET_OUT_EXECUTABLES_UNSTRIPPED)/pvmfw
-
-# If pvmfw target is not available and there is a prebuilt available use prebuilt
-# NOTE: This is only a temporary feature for x86_64 and is not meant to be supported for long.
-# TODO(b/391333413): Don't allow use of pvmfw prebuilts as soon as it is possible
-ifeq ($(INTERNAL_PVMFWIMAGE_FILES),)
-ifneq ($(PRODUCT_PVMFW_IMAGE_PREBUILT),)
-INTERNAL_PVMFWIMAGE_FILES := $(call module-target-built-files,$(PRODUCT_PVMFW_IMAGE_PREBUILT))
-INTERNAL_PVMFW_SYMBOL :=
-
-ifneq ($(PRODUCT_PVMFW_BIN_PREBUILT),)
-INSTALLED_PVMFW_BINARY_TARGET := $(call module-target-built-files,$(PRODUCT_PVMFW_BIN_PREBUILT))
-endif # PRODUCT_PVMFW_BIN_PREBUILT
-
-ifneq ($(PRODUCT_PVMFW_EMBEDDED_AVBKEY_PREBUILT),)
-INTERNAL_PVMFW_EMBEDDED_AVBKEY := $(call module-target-built-files,$(PRODUCT_PVMFW_EMBEDDED_AVBKEY_PREBUILT))
-endif # PRODUCT_PVMFW_EMBEDDED_AVBKEY_PREBUILT
-
-endif # PRODUCT_PVMFW_IMAGE_PREBUILT
-endif # INTERNAL_PVMFWIMAGE_FILES
 
 $(call declare-1p-container,$(INSTALLED_PVMFWIMAGE_TARGET),)
 $(call declare-container-license-deps,$(INSTALLED_PVMFWIMAGE_TARGET),$(INTERNAL_PVMFWIMAGE_FILES),$(PRODUCT_OUT)/:/)
@@ -4887,10 +4740,10 @@ BOARD_AVB_INIT_BOOT_ADD_HASH_FOOTER_ARGS += \
     --prop com.android.build.init_boot.fingerprint:$(BUILD_FINGERPRINT_FROM_FILE)
 
 BOARD_AVB_VENDOR_BOOT_ADD_HASH_FOOTER_ARGS += \
-    --prop com.android.build.vendor_boot.fingerprint:$(BUILD_FINGERPRINT_FROM_FILE) \
+    --prop com.android.build.vendor_boot.fingerprint:$(BUILD_FINGERPRINT_FROM_FILE)
 
 BOARD_AVB_VENDOR_KERNEL_BOOT_ADD_HASH_FOOTER_ARGS += \
-    --prop com.android.build.vendor_kernel_boot.fingerprint:$(BUILD_FINGERPRINT_FROM_FILE) \
+    --prop com.android.build.vendor_kernel_boot.fingerprint:$(BUILD_FINGERPRINT_FROM_FILE)
 
 BOARD_AVB_RECOVERY_ADD_HASH_FOOTER_ARGS += \
     --prop com.android.build.recovery.fingerprint:$(BUILD_FINGERPRINT_FROM_FILE)
@@ -6507,6 +6360,13 @@ define copy-image-and-generate-map
   )
 endef
 
+HAS_ANY_EROFS_PARTITION :=
+$(foreach image_type,INIT_BOOT BOOT VENDOR_BOOT VENDOR_KERNEL_BOOT SYSTEM VENDOR CACHE USERDATA PRODUCT SYSTEM_EXT OEM ODM VENDOR_DLKM ODM_DLKM SYSTEM_DLKM VBMETA VBMETA_SYSTEM VBMETA_VENDOR VBMETA_SYSTEM_DLKM VBMETA_VENDOR_DLKM, \
+  $(if $(BUILDING_$(image_type)_IMAGE), \
+    $(if $(filter erofs,$(BOARD_$(image_type)IMAGE_FILE_SYSTEM_TYPE)), \
+      $(eval HAS_ANY_EROFS_PARTITION := true))))
+.KATI_READONLY := HAS_ANY_EROFS_PARTITION
+
 # By conditionally including the dependency of the target files package on the
 # full system image deps, we speed up builds that do not build the system
 # image.
@@ -6644,6 +6504,14 @@ endif
 ifdef BOARD_PREBUILT_BOOTLOADER
 $(BUILT_TARGET_FILES_DIR): $(INSTALLED_BOOTLOADER_MODULE)
 droidcore-unbundled: $(INSTALLED_BOOTLOADER_MODULE)
+endif
+
+# Add a dependency for the signed desktop firmware. We need it included in the
+# target_files.zip so that the unsigned firmware can be swapped with the signed
+# firmware when the target files are signed.
+DESKTOP_SIGNED_FW_ZIP := $(call module-built-files,desktop-firmware-zip-signed)
+ifneq ($(DESKTOP_SIGNED_FW_ZIP),)
+  $(BUILT_TARGET_FILES_DIR): $(DESKTOP_SIGNED_FW_ZIP)
 endif
 
 # Depending on the various images guarantees that the underlying
@@ -7040,6 +6908,10 @@ ifeq ($(BOARD_USES_PVMFWIMAGE),true)
 	$(hide) mkdir -p $(zip_root)/PVMFW
 	$(hide) cp $(INSTALLED_PVMFW_BINARY_TARGET) $(zip_root)/PVMFW/
 endif
+ifneq ($(DESKTOP_SIGNED_FW_ZIP),)
+	$(hide) mkdir -p $(zip_root)/SIGNED_PREBUILTS
+	$(hide) cp $(DESKTOP_SIGNED_FW_ZIP) $(zip_root)/SIGNED_PREBUILTS/ap-ec-fw-signed.zip
+endif
 ifdef BOARD_PREBUILT_BOOTLOADER
 	$(hide) mkdir -p $(zip_root)/IMAGES
 	$(hide) cp $(INSTALLED_BOOTLOADER_MODULE) $(zip_root)/IMAGES/
@@ -7100,8 +6972,10 @@ ifdef BOARD_KERNEL_PAGESIZE
 	$(hide) echo "$(BOARD_KERNEL_PAGESIZE)" > $(zip_root)/INIT_BOOT/pagesize
 endif # BOARD_KERNEL_PAGESIZE
 endif # BUILDING_INIT_BOOT_IMAGE
+ifdef HAS_ANY_EROFS_PARTITION
 ifdef BOARD_EROFS_COMPRESS_HINTS
 	$(hide) cp $(BOARD_EROFS_COMPRESS_HINTS) $(zip_root)/META/erofs_default_compress_hints.txt
+endif
 endif
 ifdef BOARD_SYSTEMIMAGE_EROFS_COMPRESS_HINTS
 	$(hide) cp $(BOARD_SYSTEMIMAGE_EROFS_COMPRESS_HINTS) $(zip_root)/META/system_erofs_compress_hints.txt
@@ -7218,7 +7092,7 @@ $(NDK_SYSROOT_TARGET): $(SOONG_OUT_DIR)/ndk.timestamp
 	$(hide) tar cjf $@ -C $(SOONG_OUT_DIR) ndk
 
 ifeq ($(HOST_OS),linux)
-$(call dist-for-goals,sdk ndk_sysroot,$(NDK_SYSROOT_TARGET))
+$(call dist-for-goals,ndk_sysroot,$(NDK_SYSROOT_TARGET))
 endif
 
 ifeq ($(build_ota_package),true)
@@ -7314,12 +7188,6 @@ dexpreopt_config_zip: $(DEXPREOPT_CONFIG_ZIP)
 $(call declare-1p-target,$(DEXPREOPT_CONFIG_ZIP),)
 
 # -----------------------------------------------------------------
-# Zips of the symbols directory per test suites
-#
-
-$(foreach suite,$(ALL_COMPATIBILITY_SUITES),$(eval $(call create-suite-symbols-map,$(suite))))
-
-# -----------------------------------------------------------------
 # A zip of the symbols directory.  Keep the full paths to make it
 # more obvious where these files came from.
 # Also produces a textproto containing mappings from elf IDs to symbols
@@ -7343,8 +7211,15 @@ SYMBOLS_MAPPING := $(PRODUCT_OUT)/$(name)-symbols-mapping.textproto
 
 _symbols_zip_modules := $(call product-installed-modules,$(INTERNAL_PRODUCT))
 
+ifeq ($(BOARD_USES_PVMFWIMAGE),true)
+_symbols_zip_modules += pvmfw_bin
+endif # BOARD_USES_PVMFWIMAGE
+
 _symbols_zip_modules_symbols_files := $(foreach m,$(_symbols_zip_modules),$(ALL_MODULES.$(m).SYMBOLIC_OUTPUT_PATH))
 _symbols_zip_modules_mapping_files := $(foreach m,$(_symbols_zip_modules),$(ALL_MODULES.$(m).ELF_SYMBOL_MAPPING_PATH))
+
+.PHONY: symbols-zip
+symbols-zip: $(SYMBOLS_ZIP) $(SYMBOLS_MAPPING)
 
 .PHONY: symbols-files
 symbols-files: $(_symbols_zip_modules_symbols_files)
@@ -7880,23 +7755,12 @@ ATREE_FILES := \
 	$(ALL_SDK_FILES)
 endif
 
-atree_dir := development/build
-
-
-sdk_atree_files := $(atree_dir)/sdk.exclude.atree
-
-# development/build/sdk-android-<abi>.atree is used to differentiate
-# between architecture models (e.g. ARMv5TE versus ARMv7) when copying
-# files like the kernel image. We use TARGET_CPU_ABI because we don't
-# have a better way to distinguish between CPU models.
-ifneq (,$(strip $(wildcard $(atree_dir)/sdk-android-$(TARGET_CPU_ABI).atree)))
-  sdk_atree_files += $(atree_dir)/sdk-android-$(TARGET_CPU_ABI).atree
-endif
+sdk_atree_files := development/build/sdk.exclude.atree
 
 ifneq ($(PRODUCT_SDK_ATREE_FILES),)
 sdk_atree_files += $(PRODUCT_SDK_ATREE_FILES)
 else
-sdk_atree_files += $(atree_dir)/sdk.atree
+sdk_atree_files += development/build/sdk.atree
 endif
 
 SDK_METADATA_DIR :=$= $(call intermediates-dir-for,PACKAGING,framework-doc-stubs-metadata,,COMMON)
@@ -7945,21 +7809,10 @@ $(INTERNAL_SDK_TARGET): PRIVATE_DIR := $(sdk_dir)/$(sdk_name)
 $(INTERNAL_SDK_TARGET): PRIVATE_DEP_FILE := $(sdk_dep_file)
 $(INTERNAL_SDK_TARGET): PRIVATE_INPUT_FILES := $(sdk_atree_files)
 $(INTERNAL_SDK_TARGET): PRIVATE_PLATFORM_NAME := $(sdk_platform_dir_name)
-# Set SDK_GNU_ERROR to non-empty to fail when a GNU target is built.
-#
-#SDK_GNU_ERROR := true
 
-$(INTERNAL_SDK_TARGET): $(deps)
+$(INTERNAL_SDK_TARGET): $(deps) | $(BUILD_NUMBER_FILE)
 	@echo "Package SDK: $@"
 	$(hide) rm -rf $(PRIVATE_DIR) $@
-	$(hide) for f in $(strip $(target_gnu_MODULES)); do \
-	  if [ -f $$f ]; then \
-	    echo SDK: $(if $(SDK_GNU_ERROR),ERROR:,warning:) \
-	        including GNU target $$f >&2; \
-	    FAIL=$(SDK_GNU_ERROR); \
-	  fi; \
-	done; \
-	if [ $$FAIL ]; then exit 1; fi
 	$(hide) ( \
 	    ATREE_STRIP="$(HOST_STRIP) -x" \
 	    $(HOST_OUT_EXECUTABLES)/atree \
@@ -7979,6 +7832,10 @@ $(INTERNAL_SDK_TARGET): $(deps)
 	        -o $(PRIVATE_DIR) && \
 	    HOST_OUT_EXECUTABLES=$(HOST_OUT_EXECUTABLES) HOST_OS=$(HOST_OS) \
 	        development/build/tools/sdk_clean.sh $(PRIVATE_DIR) && \
+	    if [ "$(TARGET_BUILD_VARIANT)" != "user" ] && \
+	       { [ "$(PRODUCT_NAME)" = "sdk" ] || [ "$(PRODUCT_NAME)" = "sdk_with_runtime_apis" ]; }; then \
+	        sed -e "s/{BUILD_NUMBER}/`cat $(BUILD_NUMBER_FILE)`/" -e "s/{PRODUCT_EXPORT_RUNTIME_APIS}/$(PRODUCT_EXPORT_RUNTIME_APIS)/" build/make/core/build_properties_template.xml > $(PRIVATE_DIR)/build_properties.xml; \
+	    fi && \
 	    chmod -R ug+rwX $(PRIVATE_DIR) && \
 	    cd $(dir $@) && zip -rqX $(notdir $@) $(PRIVATE_NAME) \
 	) || ( rm -rf $(PRIVATE_DIR) $@ && exit 44 )
@@ -8079,6 +7936,12 @@ endif # PACK_DESKTOP_FILESYSTEM_IMAGES
 # -----------------------------------------------------------------
 # Desktop pack recovery image hook.
 ifeq ($(BOARD_USES_DESKTOP_RECOVERY_IMAGE),true)
+ifeq ($(GENERATED_FW_IMAGE),)
+$(error The desktop recovery image requires AP and EC firmware. \
+	Please ensure RELEASE_FIRMWARE_$(call to-upper,$(TARGET_PRODUCT))_VERSION is set, \
+	or disable the recovery image by specifying \
+	PRODUCT_BUILD_DESKTOP_RECOVERY_IMAGE := false)
+endif # ($(GENERATED_FW_IMAGE),)
 PACK_RECOVERY_IMAGE_TARGET := $(PRODUCT_OUT)/android-desktop_recovery_image.bin
 PACK_RECOVERY_IMAGE_ARGS := --noarchive --recovery --firmware $(GENERATED_FW_IMAGE) --partition-image $(GENERATED_PARTITION_IMAGE)
 
@@ -8091,10 +7954,17 @@ $(PACK_RECOVERY_IMAGE_TARGET): $(PACK_IMAGE_DEPS) $(PRODUCT_OUT)/recovery-kernel
 
 PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET := $(PACK_RECOVERY_IMAGE_TARGET).zst
 
-$(PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET): $(PACK_RECOVERY_IMAGE_TARGET) | $(ZSTD)
+$(PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET): $(PACK_RECOVERY_IMAGE_TARGET) $(ZSTD)
 	$(ZSTD) -T0 -19 -fk $(PACK_RECOVERY_IMAGE_TARGET)
 
 $(call dist-for-goals,dist_files,$(PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET))
+
+PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET_ZIP := $(PACK_RECOVERY_IMAGE_TARGET).zip
+
+$(PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET_ZIP): $(PACK_RECOVERY_IMAGE_TARGET) $(SOONG_ZIP)
+	$(SOONG_ZIP) -o $(PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET_ZIP) -f $(PACK_RECOVERY_IMAGE_TARGET)
+
+$(call dist-for-goals,dist_files,$(PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET_ZIP):recovery_util/recovery.zip)
 
 .PHONY: pack-recovery-image
 pack-recovery-image: $(PACK_RECOVERY_IMAGE_TARGET)

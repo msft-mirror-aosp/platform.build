@@ -43,7 +43,6 @@ PRODUCT_PACKAGES += \
     bootstat \
     boringssl_self_test \
     bpfloader \
-    bpftool \
     bu \
     bugreport \
     bugreportz \
@@ -265,7 +264,6 @@ PRODUCT_PACKAGES += \
     screencap \
     sdcard \
     secdiscard \
-    SecureElement \
     selinux_policy_system \
     sensorservice \
     service \
@@ -304,14 +302,16 @@ PRODUCT_PACKAGES += \
     wifi.rc \
     wm \
 
-# Once Telecom is APEX, we will consolidate all deps
-ifeq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
+ifeq ($(RELEASE_CROSS_DEVICE_SYNC),true)
   PRODUCT_PACKAGES += \
-      com.android.telecom \
+        CrossDeviceSync
+endif
 
-else
+# Once Telecom is APEX, we will consolidate all deps
+ifneq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
   PRODUCT_PACKAGES += \
       telecom \
+      framework-telecom
 
 endif
 
@@ -330,6 +330,13 @@ endif
 ifneq ($(RELEASE_ONDEVICE_INTELLIGENCE_MODULE),true)
   PRODUCT_PACKAGES += \
         framework-ondeviceintelligence-platform
+
+endif
+
+# Non-updatable NSC classes. Replaced by framework-conscrypt-nsc.
+ifneq ($(RELEASE_CONSCRYPT_NSC),true)
+  PRODUCT_PACKAGES += \
+        framework-network-security-config \
 
 endif
 
@@ -381,13 +388,6 @@ ifeq ($(RELEASE_USE_WEBVIEW_BOOTSTRAP_MODULE),true)
         com.android.webview.bootstrap
 endif
 
-# Only add the jar when it is not in the Tethering module. Otherwise,
-# it will be added via com.android.tethering
-ifneq ($(RELEASE_MOVE_VCN_TO_MAINLINE),true)
-    PRODUCT_PACKAGES += \
-        framework-connectivity-b
-endif
-
 ifeq ($(RELEASE_TELEPHONY_MODULE),true)
     PRODUCT_PACKAGES += \
        com.android.telephonycore
@@ -404,10 +404,17 @@ endif
 
 ifeq ($(RELEASE_MEMORY_MANAGEMENT_DAEMON),true)
   PRODUCT_PACKAGES += \
-        mm_daemon
+        mm_daemon \
+        mm_daemon_setup
 else
   PRODUCT_PACKAGES += \
         init-mmd-prop.rc
+endif
+
+
+ifeq ($(RELEASE_PROCESS_MEMORY_GUARDIAN_DAEMON),true)
+  PRODUCT_PACKAGES += \
+        pmg_daemon
 endif
 
 # VINTF data for system image
@@ -422,6 +429,8 @@ PRODUCT_PACKAGES += \
 # are no longer supported for dessert upgrades).
 PRODUCT_PACKAGES += \
     hwservicemanager_compat_symlink_module \
+# Prevent timeouts to check availability of hwservicmanager during boot
+PRODUCT_SYSTEM_PROPERTIES += hwservicemanager.always_sets_disabled=true
 
 PRODUCT_PACKAGES_ARM64 := libclang_rt.hwasan \
  libclang_rt.hwasan.bootstrap \
@@ -515,7 +524,6 @@ PRODUCT_PACKAGES += init.usb.rc init.usb.configfs.rc
 PRODUCT_PACKAGES += etc_hosts
 
 PRODUCT_PACKAGES += init.zygote32.rc
-PRODUCT_VENDOR_PROPERTIES += ro.zygote?=zygote32
 
 PRODUCT_SYSTEM_PROPERTIES += debug.atrace.tags.enableflags=0
 PRODUCT_SYSTEM_PROPERTIES += persist.traced.enable=1
@@ -596,6 +604,15 @@ endif
 ifneq (,$(RELEASE_NATIVE_FRAMEWORK_PROTOTYPE))
     PRODUCT_PACKAGES += \
         zygote_next
+endif
+
+# Whether to use Java or new native (Rust) OMAPI implementation
+ifeq ($(RELEASE_NATIVE_OMAPI),true)
+    PRODUCT_PACKAGES += \
+        omapi
+else
+    PRODUCT_PACKAGES += \
+        SecureElement
 endif
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/runtime_libart.mk)

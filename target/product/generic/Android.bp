@@ -554,7 +554,6 @@ system_image_defaults {
         "bootanimation",
         "bootstat",
         "bpfloader",
-        "bpftool",
         "bu",
         "bugreport",
         "bugreportz",
@@ -707,7 +706,12 @@ system_image_defaults {
         "wifi.rc", // base_system
         "wificond", // base_system
         "wm", // base_system
-    ] + select(release_flag("RELEASE_PLATFORM_VERSION_CODENAME"), {
+    ] + select(release_flag("RELEASE_NATIVE_OMAPI"), {
+        true: [
+            "omapi",
+        ],
+        default: [],
+    }) + select(release_flag("RELEASE_PLATFORM_VERSION_CODENAME"), {
         "REL": [],
         default: [
             "android.software.preview_sdk.prebuilt.xml", // media_system
@@ -715,10 +719,16 @@ system_image_defaults {
     }) + select(release_flag("RELEASE_MEMORY_MANAGEMENT_DAEMON"), {
         true: [
             "mm_daemon", // base_system (RELEASE_MEMORY_MANAGEMENT_DAEMON)
+            "mm_daemon_setup", // base_system (RELEASE_MEMORY_MANAGEMENT_DAEMON)
         ],
         default: [
             "init-mmd-prop.rc", // base_system
         ],
+    }) + select(release_flag("RELEASE_PROCESS_MEMORY_GUARDIAN_DAEMON"), {
+        true: [
+            "pmg_daemon", // base_system (RELEASE_PROCESS_MEMORY_GUARDIAN_DAEMON)
+        ],
+        default: [],
     }) + select(product_variable("debuggable"), {
         true: [
             "alloctop",
@@ -828,7 +838,6 @@ system_image_defaults {
                 "PrintSpooler", // handheld_system
                 "PrivateSpace", // handheld_system
                 "ProxyHandler", // handheld_system
-                "SecureElement", // handheld_system
                 "SettingsProvider", // base_system
                 "SharedStorageBackup", // handheld_system
                 "Shell", // base_system
@@ -885,7 +894,12 @@ system_image_defaults {
                 "system_compatibility_matrix.xml", //base_system
                 "telephony-common", // libs from TeleService
                 "voip-common", // base_system
-            ] + select(soong_config_variable("ANDROID", "release_crashrecovery_module"), {
+            ] + select(release_flag("RELEASE_NATIVE_OMAPI"), {
+                true: [],
+                default: [
+                    "SecureElement", // handheld_system
+                ],
+            }) + select(soong_config_variable("ANDROID", "release_crashrecovery_module"), {
                 "true": [
                     "com.android.crashrecovery", // base_system (RELEASE_CRASHRECOVERY_MODULE)
                 ],
@@ -904,11 +918,6 @@ system_image_defaults {
                     "com.android.profiling", // base_system (RELEASE_PACKAGE_PROFILING_MODULE)
                 ],
                 default: [],
-            }) + select(release_flag("RELEASE_MOVE_VCN_TO_MAINLINE"), {
-                true: [],
-                default: [
-                    "framework-connectivity-b", // base_system
-                ],
             }) + select(release_flag("RELEASE_UPROBESTATS_MODULE"), {
                 true: [
                     "com.android.uprobestats", // base_system (RELEASE_UPROBESTATS_MODULE)
@@ -926,6 +935,33 @@ system_image_defaults {
                     "ContactsPicker", // handheld_system (RELEASE_ACONFIG_INCLUDE_CONTACTS_PICKER_APP)
                 ],
                 default: [],
+            }) + select(release_flag("RELEASE_PACKAGE_COMPUTER_CONTROL"), {
+                true: [
+                    "VirtualDeviceManager", // media_system (RELEASE_PACKAGE_COMPUTER_CONTROL)
+                ],
+                default: [],
+            }) + select(release_flag("RELEASE_CROSS_DEVICE_SYNC"), {
+                true: [
+                    "CrossDeviceSync", // base_system (RELEASE_CROSS_DEVICE_SYNC)
+                ],
+                default: [],
+            }) + select(release_flag("RELEASE_ACONFIG_INCLUDE_EYE_DROPPER_APP"), {
+                true: [
+                    "EyeDropper", // handheld_system (RELEASE_ACONFIG_INCLUDE_EYE_DROPPER_APP)
+                ],
+                default: [],
+            }) + select(release_flag("RELEASE_CONSCRYPT_NSC"), {
+                true: [
+                    "framework-conscrypt-nsc",
+                ],
+                default: [
+                    "framework-network-security-config", // base_system
+                ],
+            }) + select(release_flag("RELEASE_TELECOM_MAINLINE_MODULE"), {
+                true: [],
+                default: [
+                    "framework-telecom", // base_system
+                ],
             }),
         },
         prefer32: {
@@ -1073,6 +1109,9 @@ system_image_defaults {
             ],
         },
     },
+    // Do not use a fixed timestamp.
+    // This prevents a full push on the first adb sync.
+    no_use_fixed_timestamp: true,
 }
 
 android_system_image {

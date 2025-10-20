@@ -63,6 +63,33 @@ function require_lunch
 }
 fi
 
+function set_network_file_system_type_env_var() {
+  local top=$(gettop)
+  local out_dir=$(getoutdir)
+  local cartfs_mount_point=$(cartfs_mount_point)
+
+  local nfs_type=local
+
+  # The options are:
+  # - cog-cartfs-symlink: out is a symlink to a CartFS path in a Cog workspace.
+  # - local-cartfs-symlink: out is a symlink to a CartFS path in a local workspace.
+  # - cog-symlink: $top starts with /google/cog.
+  # - abfs: .abfs.sock exists in the workspace.
+  if [[ -n "$cartfs_mount_point" && -L "$out_dir" && "$(readlink "$out_dir")" =~ ^/google/cartfs/mount ]]; then
+    if [[ "$top" =~ ^/google/cog ]]; then
+      nfs_type=cog-cartfs-symlink
+    else
+      nfs_type=local-cartfs-symlink
+    fi
+  elif [[ "$top" =~ ^/google/cog ]]; then
+    nfs_type=cog-symlink
+  elif [[ -f "$top/.abfs.sock" ]]; then
+    nfs_type=abfs
+  fi
+
+  export NETWORK_FILE_SYSTEM_TYPE=$nfs_type
+}
+
 # This function sets up the build environment to be appropriate for Cog.
 function setup_cog_env_if_needed() {
   local top=$(gettop)
@@ -119,6 +146,17 @@ function setup_cog_symlink() {
   if [[ -n "$cartfs_mount_point" ]]; then
     local cog_workspace_name="$(basename "$(dirname "${top}")")"
     link_destination="${cartfs_mount_point}/${cog_workspace_name}/out"
+    setup_cartfs_incremental_build "${link_destination}" "${cartfs_mount_point}"
+  else
+    # If CartFS is not mounted, check to see if it is installed (no mount but
+    # being installed implies it was disabled). If it is installed, then don't
+    # display any messages to the user. If it isn't installed, then message the
+    # user to install it, but don't stop the script.
+    if ! command -v cartfs &> /dev/null; then
+      echo "***"
+      echo "🚨 Install CartFS for more reliable builds. See go/cartfs-with-cog for installation instructions! 🚨"
+      echo "***"
+    fi
   fi
 
   # remove existing out/ dir if it exists
@@ -173,13 +211,16 @@ function _wrap_build()
     local secs=$(($tdiff % 60))
     local ncolors=$(tput colors 2>/dev/null)
     if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
-        color_failed=$'\E'"[0;31m"
-        color_success=$'\E'"[0;32m"
-        color_warning=$'\E'"[0;33m"
+        color_failed=$'\E'"[0;31m"  # red
+        color_success=$'\E'"[0;32m"  # green
+        color_warning=$'\E'"[0;33m"  # yellow
+        color_info=$'\E'"[0;36m"  # cyan
         color_reset=$'\E'"[00m"
     else
         color_failed=""
         color_success=""
+        color_warning=""
+        color_info=""
         color_reset=""
     fi
 
@@ -196,7 +237,19 @@ function _wrap_build()
     elif [ $secs -gt 0 ] ; then
         printf "(%d seconds)" $secs
     fi
-    echo " ####${color_reset}"
+    echo " ####"
+    # Because SOONG_PARTIAL_COMPILE and SOONG_USE_PARTIAL_COMPILE are set via
+    # ANDROID_BUILD_ENVIRONMENT, we only have access to values explicitly set by the user.
+    if [[ ${TARGET_BUILD_VARIANT} = eng ]] && [[ $SOONG_USE_PARTIAL_COMPILE == false ]]; then
+      echo "${color_info}Partial compilation was disabled due to SOONG_USE_PARTIAL_COMPILE=false"
+      echo "See http://go/soong-partial-compile"
+    fi
+    if [[ ${SOONG_INCREMENTAL_ANALYSIS#true} = ${SOONG_INCREMENTAL_ANALYSIS} ]]; then
+      echo "${color_info}Try enabling incremental analysis for faster builds after changing Android.bp files."
+      echo "See http://go/soong-incremental-analysis"
+    fi
+    echo -n "${color_reset}"
+
     echo
     return $ret
 }
@@ -244,6 +297,11 @@ function import_build_vars()
 }
 
 function cartfs_mount_point() {
+  # Make sure findmnt is installed.
+  if ! command -v findmnt &> /dev/null; then
+    return
+  fi
+
   local cartfs_user_id="$(id -u cartfs 2>/dev/null)"
   local cartfs_mount_point="$(findmnt -t fuse -O "user_id=${cartfs_user_id}" | tail -n +2 | awk '{print $1}')"
   # Making sure $cartfs_user_id is not empty since findmnt will return mounts
@@ -275,5 +333,93 @@ function clean_deleted_workspaces_in_cartfs() {
         fi
       done <<< "$folders_list"
     fi
+  fi
+}
+
+# Configure the output directory of the new workspace in Cartfs to be an
+# incremental build by copying the build output of a previous build of the same
+# repo and forking the mtimes in Cog.
+function setup_cartfs_incremental_build() {
+  # Make sure grpc_cli is installed.
+  if ! command -v grpc_cli &> /dev/null; then
+    return
+  fi
+
+  local link_destination=$1
+  if [[ -d "$link_destination" ]]; then
+    return
+  fi
+
+  local cartfs_endpoint="127.0.0.1:65001"
+  local cartfs_rpc_copy_directory="cartfs.Cartfs.CopyDirectory"
+
+  # Make sure CartFS is listening on the endpoint and that the CopyDirectory
+  # function is available.
+  if ! grpc_cli ls ${cartfs_endpoint} ${cartfs_rpc_copy_directory} --channel_creds_type=insecure &> /dev/null; then
+    return
+  fi
+
+  local cogfsd_endpoint="unix:///google/cog/status/uds/${UID}"
+  local cogfsd_rpc_forkmtimes="devtools_srcfs.CogLocalRpcService.ForkMtimes"
+
+  # Make sure Cogfsd is listening on the endpoint and that the ForMtimes
+  # function is available.
+  if ! grpc_cli ls ${cogfsd_endpoint} ${cogfsd_rpc_forkmtimes} --channel_creds_type=insecure &> /dev/null; then
+    return
+  fi
+
+  echo "Searching for recent build outputs in CartFS for incremental builds"
+
+  local cartfs_mount_point=$2
+  local top=$(gettop)
+  local repo="$(basename "${top}")"
+  local current_cartfs_folder="$(dirname "${link_destination}")"
+  local target_workspace="$(basename "${current_cartfs_folder}")"
+  local source_workspace
+  local copy_from
+  local folders
+
+  folders=$(stat -c "%Y %n" ${cartfs_mount_point}/*/out 2>/dev/null | sort -nr | sed 's/^[0-9]\+ //')
+  if [[ -n "${folders}" ]]; then
+    while read -r cartfs_out; do
+      if [[ "${cartfs_out}" != "${link_destination}" ]]; then
+        local workspace_name="$(basename "$(dirname "${cartfs_out}")")"
+        local workspace_path="$(dirname "$(dirname "${top}")")"
+        local full_path="${workspace_path}/${workspace_name}/${repo}"
+
+        # Make sure the CoG workspace still exists and is of the same repo.
+        if [[ ! -d "${full_path}" ]]; then
+          continue
+        fi
+
+        # Make sure the out directory exists, is not empty, and we can stat it.
+        if [[ -d "${cartfs_out}" && -n "$(ls -A "${cartfs_out}")" ]]; then
+          copy_from="${cartfs_out}"
+          source_workspace="${workspace_name}"
+          break
+        fi
+      fi
+    done <<< "$folders"
+  fi
+
+  if [[ -n "$copy_from" ]]; then
+    echo "Found suitable build output from workspace ${source_workspace}"
+    echo "Copying content from $copy_from to $link_destination"
+    # Filtering output to only include relevant information.
+    local output_filter="connecting to|Rpc succeeded with OK status|Not yet implemented|success|Received trailing metadata from server"
+    grpc_cli call ${cartfs_endpoint} ${cartfs_rpc_copy_directory} \
+    'from_path: "'${copy_from#$cartfs_mount_point/}'"
+     to_path: "'${link_destination#$cartfs_mount_point/}'"' \
+      --channel_creds_type=insecure 2>&1 | grep -v -E "${output_filter}"
+    grpc_cli call ${cogfsd_endpoint} ${cogfsd_rpc_forkmtimes} \
+    'source_workspace: "'${source_workspace}'"
+     target_workspace: "'${target_workspace}'"' \
+      --channel_creds_type=insecure 2>&1 | grep -v -E "${output_filter}"
+    # Adding a file to track that the workspace is an incremental
+    # build from Cartfs. This will be used for metrics.
+    echo "${source_workspace}" > "${link_destination}/.cartfs-copied"
+  else
+    echo "No suitable build outputs matching the same repository found."
+    echo "Starting from a fresh build output directory."
   fi
 }

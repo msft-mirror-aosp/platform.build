@@ -20,6 +20,8 @@ import json
 import logging
 import os
 import pathlib
+import re
+import shutil
 import subprocess
 
 from build_context import BuildContext
@@ -269,6 +271,10 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
         modules_to_build.add(module)
         self._build_outputs.extend(module_outputs)
 
+    if java_coverage_enabled():
+      # in theory this could be 'optimized' as well, but there is no support currently
+      modules_to_build.add('general-tests-jacoco')
+
     return modules_to_build
 
   def _get_general_tests_outputs(self) -> list[str]:
@@ -384,6 +390,17 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
 
     return command
 
+  def _module_in_modules_to_build(self, path) -> bool:
+    """True if the path has module in modules_to_build or has lib/ lib64/. """
+    for module in self.modules_to_build:
+      if f'/{module}/' in path:
+        return True
+      elif '/lib/' in path:
+        return True
+      elif '/lib64/' in path:
+        return True
+    return False
+
   def get_package_outputs_commands_impl(self):
     src_top = pathlib.Path(os.environ.get('TOP', os.getcwd()))
     dist_dir = pathlib.Path(os.environ.get('DIST_DIR'))
@@ -392,8 +409,33 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
 
     logging.info('Getting host outputs')
     deduplicated_host_outputs = set(self._general_tests_host_outputs)
-    intermediate_host_outputs = [p for p in deduplicated_host_outputs if pathlib.Path(str(src_top) + '/' + p.strip()).exists()]
-    host_outputs = [str(src_top) + '/' + file for file in intermediate_host_outputs if any('/'+module+'/' in file for module in self.modules_to_build)]
+
+    soong_vars = self._query_soong_vars(
+        src_top,
+        [
+            'PRODUCT_OUT',
+            'SOONG_HOST_OUT',
+            'HOST_OUT',
+            'OUT_DIR',
+        ],
+    )
+
+    host_outputs = list()
+
+    if java_coverage_enabled():
+      general_tests_jacoco_out = os.path.join(
+          soong_vars.get('OUT_DIR'), 'soong', 'packaging', 'general-tests_jacoco_report_classes.jar')
+      if os.path.exists(general_tests_jacoco_out):
+        shutil.copy(general_tests_jacoco_out, dist_dir)
+
+    for p in deduplicated_host_outputs:
+      file_path = os.path.join(str(src_top), p)
+
+      if not self._module_in_modules_to_build(file_path.strip()):
+        continue
+      if pathlib.Path(file_path.strip()).exists():
+        host_outputs.append(file_path)
+
     logging.info('host_outputs size: %d', len(host_outputs))
     host_manifest_files, host_module_with_manifest_files = self._get_manifest_files(host_outputs)
     extra_host_files = self._get_base_module_names(host_manifest_files, host_module_with_manifest_files)
@@ -409,10 +451,13 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
     target_outputs.extend(extra_target_files)
     # Dedup final entries in output and remove non-existent files.
     logging.info('Handling host and target outputs')
+
     host_outputs = set(host_outputs)
     host_outputs = [p for p in host_outputs if pathlib.Path(p.strip()).exists()]
+
     target_outputs = set(target_outputs)
     target_outputs = [p for p in target_outputs if pathlib.Path(p.strip()).exists()]
+
     logging.info('host_outputs final size: %d', len(host_outputs))
     logging.info('target_outputs final size: %d', len(target_outputs))
 
@@ -427,17 +472,11 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
     with open(f"{tmp_dir / 'target.list'}", 'w') as target_list_file:
       for output in target_outputs:
         target_list_file.write(output)
-    soong_vars = self._query_soong_vars(
-        src_top,
-        [
-            'PRODUCT_OUT',
-            'SOONG_HOST_OUT',
-            'HOST_OUT',
-        ],
-    )
+
     product_out = pathlib.Path(soong_vars.get('PRODUCT_OUT'))
     soong_host_out = pathlib.Path(soong_vars.get('SOONG_HOST_OUT'))
     host_out = pathlib.Path(soong_vars.get('HOST_OUT'))
+
     zip_commands = []
 
     zip_commands.extend(
@@ -452,6 +491,7 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
     )
 
     zip_command = self._base_zip_command(src_top, dist_dir, 'general-tests.zip')
+
     # Add host testcases.
     if host_outputs:
       zip_command.extend(
@@ -603,3 +643,12 @@ class GeneralTestsOptimizer(OptimizedBuildTarget):
 
 OPTIMIZED_BUILD_TARGETS = {}
 OPTIMIZED_BUILD_TARGETS.update(GeneralTestsOptimizer.get_optimized_targets())
+
+# Equivalent to soong's JavaCoverageEnabled()
+def java_coverage_enabled() -> bool:
+  return is_env_true('EMMA_INSTRUMENT') or is_env_true('EMMA_INSTRUMENT_STATIC') or is_env_true('EMMA_INSTRUMENT_FRAMEWORK')
+
+# Equivalent to soong's IsEnvTrue()
+def is_env_true(env: str) -> bool:
+  value = os.environ.get(env, '').lower()
+  return value == '1' or value == 'y' or value == 'yes' or value == 'on' or value == 'true'

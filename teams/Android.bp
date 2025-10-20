@@ -4368,6 +4368,13 @@ team {
 }
 
 team {
+    name: "trendy_team_desktop_biometrics",
+
+    // go/trendy/manage/engineers/6163282303221760
+    trendy_team_id: "6163282303221760",
+}
+
+team {
     name: "trendy_team_desktop_connectivity",
 
     // go/trendy/manage/engineers/4563545867255808
@@ -4442,6 +4449,27 @@ team {
 
     // go/trendy/manage/engineers/4630910416027648
     trendy_team_id: "4630910416027648",
+}
+
+team {
+    name: "trendy_team_desktop_apps",
+
+    // go/trendy/manage/engineers/5126495820677120
+    trendy_team_id: "5126495820677120",
+}
+
+team {
+    name: "trendy_team_private_compute_core",
+
+    // go/trendy/manage/engineers/6240132656365568
+    trendy_team_id: "6240132656365568",
+}
+
+team {
+    name: "trendy_team_pixel_health",
+
+    // go/trendy/manage/engineers/6730550418440192
+    trendy_team_id: "6730550418440192",
 }
 
 // DON'T ADD NEW RULES HERE. For more details refer to

@@ -61,6 +61,24 @@ pub fn set_boolean_flag_value(
     })
 }
 
+/// Set int flag value thru mapped file and flush the change to file
+///
+/// \input mapped_file: the mapped flag value file
+/// \input index: flag index
+/// \input value: updated flag value
+/// \return a result of ()
+///
+pub fn set_int64_flag_value(
+    file: &mut MmapMut,
+    index: u32,
+    value: i64,
+) -> Result<(), AconfigStorageError> {
+    crate::flag_value_update::update_int64_flag_value(file, index, value)?;
+    file.flush().map_err(|errmsg| {
+        AconfigStorageError::MapFlushFail(anyhow!("fail to flush storage file: {}", errmsg))
+    })
+}
+
 /// Set if flag is has server override thru mapped file and flush the change to file
 ///
 /// \input mapped_file: the mapped flag info file
@@ -118,7 +136,7 @@ mod tests {
 
     #[test]
     fn test_set_boolean_flag_value() {
-        let flag_value_file = copy_to_temp_file("./tests/flag.val", false).unwrap();
+        let flag_value_file = copy_to_temp_file("data/v1/flag_v1.val", false).unwrap();
         let flag_value_path = flag_value_file.path().display().to_string();
 
         // SAFETY:
@@ -147,7 +165,7 @@ mod tests {
 
     #[test]
     fn test_set_flag_has_server_override() {
-        let flag_info_file = copy_to_temp_file("./tests/flag.info", false).unwrap();
+        let flag_info_file = copy_to_temp_file("data/v1/flag_v1.info", false).unwrap();
         let flag_info_path = flag_info_file.path().display().to_string();
 
         // SAFETY:
@@ -170,7 +188,7 @@ mod tests {
 
     #[test]
     fn test_set_flag_has_local_override() {
-        let flag_info_file = copy_to_temp_file("./tests/flag.info", false).unwrap();
+        let flag_info_file = copy_to_temp_file("data/v1/flag_v1.info", false).unwrap();
         let flag_info_path = flag_info_file.path().display().to_string();
 
         // SAFETY:

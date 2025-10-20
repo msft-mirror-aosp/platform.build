@@ -52,6 +52,10 @@ ifdef TARGET_RECOVERY_PIXEL_FORMAT
 ADDITIONAL_VENDOR_PROPERTIES += \
     ro.minui.pixel_format=$(TARGET_RECOVERY_PIXEL_FORMAT)
 endif
+ifdef TARGET_RECOVERY_NO_INITIAL_MODSET_FLUSH
+ADDITIONAL_VENDOR_PROPERTIES += \
+    ro.minui.no_initial_modset_flush=$(TARGET_RECOVERY_NO_INITIAL_MODSET_FLUSH)
+endif
 
 ifdef PRODUCT_USE_DYNAMIC_PARTITIONS
 ADDITIONAL_VENDOR_PROPERTIES += \
@@ -130,6 +134,17 @@ endif
 
 ifeq ($(AB_OTA_UPDATER),true)
 ADDITIONAL_VENDOR_PROPERTIES += ro.vendor.build.ab_ota_partitions=$(subst $(space),$(comma),$(sort $(AB_OTA_PARTITIONS)))
+endif
+
+# Add the 16K developer args if it is defined for the product.
+ifneq (,$(filter true,$(PRODUCT_16K_DEVELOPER_OPTION)))
+ADDITIONAL_VENDOR_PROPERTIES += \
+    ro.product.build.16k_page.enabled=true \
+
+else
+ADDITIONAL_VENDOR_PROPERTIES += \
+    ro.product.build.16k_page.enabled=false \
+
 endif
 
 user_variant := $(filter user userdebug,$(TARGET_BUILD_VARIANT))
