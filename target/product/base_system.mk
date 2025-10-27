@@ -95,6 +95,7 @@ PRODUCT_PACKAGES += \
     E2eeContactKeysProvider \
     e2fsck \
     enhanced-confirmation.xml \
+    evemu-record \
     ExtShared \
     flags_health_check \
     framework-graphics \
@@ -397,6 +398,11 @@ else
         framework-platformtelephony
 endif
 
+ifeq ($(RELEASE_NPUMANAGER_MODULE),true)
+    PRODUCT_PACKAGES += \
+       com.android.npumanager
+endif
+
 ifneq (,$(RELEASE_RANGING_STACK))
     PRODUCT_PACKAGES += \
         com.android.ranging
@@ -544,7 +550,6 @@ PRODUCT_PACKAGES_DEBUG := \
     adevice_fingerprint \
     arping \
     dmuserd \
-    evemu-record \
     idlcli \
     init-debug.rc \
     iotop \
