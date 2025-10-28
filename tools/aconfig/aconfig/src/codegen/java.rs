@@ -40,6 +40,7 @@ pub struct JavaCodegenConfig {
     pub support_uau_annotation: bool,
     // Whether to optimize read-only flag reads by short-circuiting test override support.
     pub optimize_read_only_getter: bool,
+    pub generate_checks_sdk_annotation: bool,
 }
 
 pub fn generate_java_code<I>(
@@ -90,6 +91,7 @@ where
         use_device_config,
         support_uau_annotation: config.support_uau_annotation,
         optimize_read_only_getter: config.optimize_read_only_getter,
+        generate_checks_sdk_annotation: config.generate_checks_sdk_annotation,
     };
     let mut template = TinyTemplate::new();
     if library_exported && config.single_exported_file {
@@ -170,6 +172,7 @@ struct Context {
     pub use_device_config: bool,
     pub support_uau_annotation: bool,
     pub optimize_read_only_getter: bool,
+    pub generate_checks_sdk_annotation: bool,
 }
 
 #[derive(Serialize, Debug)]
@@ -192,6 +195,7 @@ struct FlagElement {
     pub properties: String,
     pub finalized_sdk_present: bool,
     pub finalized_sdk_check: String,
+    pub finalized_sdk_annotation: String,
 }
 
 fn create_flag_element(
@@ -214,6 +218,7 @@ fn create_flag_element(
         (false, ApiLevel(0))
     };
     let finalized_sdk_check = finalized_sdk_value.conditional();
+    let finalized_sdk_annotation = finalized_sdk_value.annotation();
 
     Ok(FlagElement {
         container: pf.container().to_string(),
@@ -228,6 +233,7 @@ fn create_flag_element(
         properties: format_property_name(pf.namespace()),
         finalized_sdk_present,
         finalized_sdk_check,
+        finalized_sdk_annotation,
     })
 }
 
@@ -642,6 +648,11 @@ mod tests {
 
     #[test]
     fn test_generate_java_code_exported_flags() {
+        // TODO(b/324592443): Clean this up once generate_checks_sdk_annotation is enabled by default.
+        let mut golden_test_name: String = String::from("test_generate_java_code_exported_flags");
+        if cfg!(feature = "generate_checks_sdk_annotation") {
+            golden_test_name += "-annotated";
+        }
         let parsed_flags = crate::test::parse_test_flags();
         let mode = CodegenMode::Exported;
         let modified_parsed_flags =
@@ -656,12 +667,15 @@ mod tests {
                 package_name: "com.android.aconfig.test".to_string(),
             },
         );
+        let generate_checks_sdk_annotation = cfg!(feature = "generate_checks_sdk_annotation");
+
         let config = JavaCodegenConfig {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
             single_exported_file: true,
             finalized_flags,
+            generate_checks_sdk_annotation,
             ..Default::default()
         };
         let generated_files = generate_java_code(
@@ -671,7 +685,7 @@ mod tests {
         )
         .unwrap();
 
-        compare_with_goldens("test_generate_java_code_exported_flags", generated_files);
+        compare_with_goldens(&golden_test_name, generated_files);
     }
 
     #[test]
