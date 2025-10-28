@@ -967,6 +967,11 @@ system_image_defaults {
                     "com.android.npumanager", // base_system (RELEASE_NPUMANAGER_MODULE)
                 ],
                 default: [],
+            }) + select(release_flag("RELEASE_WEBAPP_MODULE"), {
+                true: [
+                    "com.android.webapp", // base_system (RELEASE_WEBAPP_MODULE)
+                ],
+                default: [],
             }),
         },
         prefer32: {
