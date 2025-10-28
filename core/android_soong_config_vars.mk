@@ -509,6 +509,27 @@ $(call soong_config_set,sdk,PLATFORM_VERSION_CODENAME,$(subst REL,,$(PLATFORM_VE
 $(call soong_config_set,sdk,PLATFORM_PREVIEW_SDK_VERSION,$(PLATFORM_PREVIEW_SDK_VERSION))
 $(call soong_config_set,sdk,BETA_SDK_VERSION,$(shell if [[ "$(PLATFORM_PREVIEW_SDK_VERSION)" =~ ^[0-9]{4}$$ ]]; then echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c4 ; fi))
 
-# Flags for the sdk platforms folder name
+# Flags for SDK plarforms package folder, move from build/core/Makefile
+# The name of the subdir within the platforms dir of the sdk.
+#   if canary build          : android-canary-$PREVIEW_SDK_INT         (android-canary-20250617)
+#   if beta build            : android-$UPCOMING_SDK_INT_FULL-ext$BETA (android-36.1-beta2)
+#   if REL                   : android-$SDK_INT_FULL                   (android-36.1)
+#   if REL with newer SDK ext: android-$SDK_INT_FULL-ext$SDK_EXT       (android-36.1-ext22)
+#   else (internal DEV)      : android-$CODENAME                       (android-CinnamonBun)
+ifeq ($(PLATFORM_VERSION_CODENAME),CANARY)
+sdk_platform_dir_name := android-canary-$(PLATFORM_PREVIEW_SDK_VERSION)
+else ifeq (,$(filter $(PLATFORM_PREVIEW_SDK_VERSION),0 1))
+major := $(shell echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c 1-2)
+minor := $(shell echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c 3)
+beta := $(shell echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c 4)
+sdk_platform_dir_name := android-$(major).$(minor)-beta$(beta)
+else ifeq ($(PLATFORM_VERSION_CODENAME),REL)
+  ifeq ($(PLATFORM_SDK_EXTENSION_VERSION),$(PLATFORM_BASE_SDK_EXTENSION_VERSION))
+    sdk_platform_dir_name := android-$(PLATFORM_SDK_VERSION_FULL)
+  else
+    sdk_platform_dir_name := android-$(PLATFORM_SDK_VERSION_FULL)-ext$(PLATFORM_SDK_EXTENSION_VERSION)
+  endif
+else
 sdk_platform_dir_name := android-$(PLATFORM_VERSION_CODENAME)
+endif
 $(call soong_config_set,sdk,sdk_platform_dir_name,$(sdk_platform_dir_name))

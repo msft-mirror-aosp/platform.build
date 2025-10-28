@@ -7824,19 +7824,28 @@ deps := \
 	$(sdk_atree_files) \
 	$(HOST_OUT_EXECUTABLES)/atree
 
-# The name of the subdir within the platforms dir of the sdk. One of:
-# - android-<SDK_INT> (stable base dessert SDKs)
-# - android-<CODENAME> (stable extension SDKs)
-# - android-<SDK_INT>-ext<EXT_INT> (codename SDKs)
-sdk_platform_dir_name := $(strip \
-  $(if $(filter REL,$(PLATFORM_VERSION_CODENAME)), \
-    $(if $(filter $(PLATFORM_SDK_EXTENSION_VERSION),$(PLATFORM_BASE_SDK_EXTENSION_VERSION)), \
-      android-$(PLATFORM_SDK_VERSION_FULL), \
-      android-$(PLATFORM_SDK_VERSION_FULL)-ext$(PLATFORM_SDK_EXTENSION_VERSION) \
-    ), \
-    android-$(PLATFORM_VERSION_CODENAME) \
-  ) \
-)
+# The name of the subdir within the platforms dir of the sdk.
+#   if canary build          : android-canary-$PREVIEW_SDK_INT         (android-canary-20250617)
+#   if beta build            : android-$UPCOMING_SDK_INT_FULL-ext$BETA (android-36.1-beta2)
+#   if REL                   : android-$SDK_INT_FULL                   (android-36.1)
+#   if REL with newer SDK ext: android-$SDK_INT_FULL-ext$SDK_EXT       (android-36.1-ext22)
+#   else (internal DEV)      : android-$CODENAME                       (android-CinnamonBun)
+ifeq ($(PLATFORM_VERSION_CODENAME),CANARY)
+sdk_platform_dir_name := android-canary-$(PLATFORM_PREVIEW_SDK_VERSION)
+else ifeq (,$(filter $(PLATFORM_PREVIEW_SDK_VERSION),0 1))
+major := $(shell echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c 1-2)
+minor := $(shell echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c 3)
+beta := $(shell echo "$(PLATFORM_PREVIEW_SDK_VERSION)" | cut -c 4)
+sdk_platform_dir_name := android-$(major).$(minor)-beta$(beta)
+else ifeq ($(PLATFORM_VERSION_CODENAME),REL)
+  ifeq ($(PLATFORM_SDK_EXTENSION_VERSION),$(PLATFORM_BASE_SDK_EXTENSION_VERSION))
+    sdk_platform_dir_name := android-$(PLATFORM_SDK_VERSION_FULL)
+  else
+    sdk_platform_dir_name := android-$(PLATFORM_SDK_VERSION_FULL)-ext$(PLATFORM_SDK_EXTENSION_VERSION)
+  endif
+else
+sdk_platform_dir_name := android-$(PLATFORM_VERSION_CODENAME)
+endif
 
 INTERNAL_SDK_TARGET := $(sdk_dir)/$(sdk_name).zip
 $(INTERNAL_SDK_TARGET): PRIVATE_NAME := $(sdk_name)
