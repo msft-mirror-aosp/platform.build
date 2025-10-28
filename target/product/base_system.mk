@@ -402,11 +402,6 @@ ifeq ($(RELEASE_NPUMANAGER_MODULE),true)
        com.android.npumanager
 endif
 
-ifeq ($(RELEASE_WEBAPP_MODULE),true)
-    PRODUCT_PACKAGES += \
-       com.android.webapp
-endif
-
 ifneq (,$(RELEASE_RANGING_STACK))
     PRODUCT_PACKAGES += \
         com.android.ranging
