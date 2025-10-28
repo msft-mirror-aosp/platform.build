@@ -29,6 +29,7 @@ use convert_finalized_flags::{ApiLevel, FinalizedFlag, FinalizedFlagMap};
 use std::collections::HashMap;
 
 // Arguments to configure codegen for generate_java_code.
+#[derive(Default)]
 pub struct JavaCodegenConfig {
     pub codegen_mode: CodegenMode,
     pub flag_ids: HashMap<String, u16>,
@@ -437,10 +438,8 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
-            finalized_flags: FinalizedFlagMap::new(),
-            support_uau_annotation: false,
             optimize_read_only_getter,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -486,10 +485,7 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
-            finalized_flags: FinalizedFlagMap::new(),
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -512,10 +508,7 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
-            finalized_flags: FinalizedFlagMap::new(),
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -547,10 +540,8 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
             finalized_flags,
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -587,10 +578,8 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
             finalized_flags,
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -616,10 +605,7 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
-            finalized_flags: FinalizedFlagMap::new(),
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -643,10 +629,7 @@ mod tests {
             codegen_mode: mode,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
-            finalized_flags: FinalizedFlagMap::new(),
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -679,8 +662,7 @@ mod tests {
             package_fingerprint: 5801144784618221668,
             single_exported_file: true,
             finalized_flags,
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let generated_files = generate_java_code(
             crate::test::TEST_PACKAGE,
@@ -709,10 +691,7 @@ mod tests {
             codegen_mode: CodegenMode::Production,
             flag_ids,
             package_fingerprint: 5801144784618221668,
-            single_exported_file: false,
-            finalized_flags: FinalizedFlagMap::new(),
-            support_uau_annotation: false,
-            optimize_read_only_getter: false,
+            ..Default::default()
         };
         let error = generate_java_code(
             crate::test::TEST_PACKAGE,
