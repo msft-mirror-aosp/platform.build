@@ -564,7 +564,6 @@ system_image_defaults {
         "cppreopts.sh", // generic_system
         "credstore",
         "debuggerd",
-        "default-permissions-virtualization.xml",
         "device_config",
         "dirty-image-objects",
         "dmctl",
