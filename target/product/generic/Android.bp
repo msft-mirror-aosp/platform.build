@@ -436,6 +436,7 @@ android_filesystem_defaults {
         "product_manifest.xml",
         "selinux_policy_product",
         "product-build.prop",
+        "com.android.hardware.biometrics.fingerprint.virtual",
 
         // AUDIO
         "frameworks_sounds",
