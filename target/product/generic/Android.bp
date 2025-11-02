@@ -720,6 +720,11 @@ system_image_defaults {
         default: [
             "android.software.preview_sdk.prebuilt.xml", // media_system
         ],
+    }) + select(release_flag("RELEASE_PROCESS_MEMORY_GUARDIAN_DAEMON"), {
+        true: [
+            "pmg_daemon", // base_system (RELEASE_PROCESS_MEMORY_GUARDIAN_DAEMON)
+        ],
+        default: [],
     }) + select(product_variable("debuggable"), {
         true: [
             "alloctop",
