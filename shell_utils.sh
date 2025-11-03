@@ -146,7 +146,10 @@ function setup_cog_symlink() {
   if [[ -n "$cartfs_mount_point" ]]; then
     local cog_workspace_name="$(basename "$(dirname "${top}")")"
     link_destination="${cartfs_mount_point}/${cog_workspace_name}/out"
-    setup_cartfs_incremental_build "${link_destination}" "${cartfs_mount_point}"
+    # TODO(b/454043953): Re-enable CartFS incremental builds if:
+    # 1. A bug causing filesystem commands to hang is found and fixed.
+    # 2. Disabling this feature doesn't improve the "hang" situation.
+    # setup_cartfs_incremental_build "${link_destination}" "${cartfs_mount_point}"
   else
     # If CartFS is not mounted, check to see if it is installed (no mount but
     # being installed implies it was disabled). If it is installed, then don't
@@ -328,7 +331,7 @@ function clean_deleted_workspaces_in_cartfs() {
           if [[ ! -d "${full_path}" ]]; then
             local log_timestamp=$(date +"%Y-%m-%d %H:%M:%S")
             echo "${log_timestamp}: The workspace ${workspace_name} does not exist, deleting ${folder} from cartfs" >> "${log_file}"
-            rm -Rf "${folder}"
+            rm -Rf "${folder}" &
           fi
         fi
       done <<< "$folders_list"
