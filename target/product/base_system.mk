@@ -415,6 +415,11 @@ ifneq (,$(RELEASE_RANGING_STACK))
         com.android.ranging
 endif
 
+ifeq ($(RELEASE_PROCESS_MEMORY_GUARDIAN_DAEMON),true)
+  PRODUCT_PACKAGES += \
+        pmg_daemon
+endif
+
 # VINTF data for system image
 PRODUCT_PACKAGES += \
     system_manifest.xml \
