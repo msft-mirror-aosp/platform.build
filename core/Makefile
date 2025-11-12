@@ -813,7 +813,8 @@ $(APKCERTS_FILE): $(make_apkcerts_file) $(soong_apkcerts_file_with_soong_and_mak
 	@rm -f $@
 	cat $(make_apkcerts_file) $(soong_apkcerts_file_with_soong_and_make_modules_removed) > $@
 	$(if $(filter true,$(PRODUCT_FSVERITY_GENERATE_METADATA)),\
-	  $(call _apkcerts_write_line,BuildManifest,$(FSVERITY_APK_KEY_PATH).x509.pem,$(FSVERITY_APK_KEY_PATH).pk8,,system,$@) \
+	  $(if $(filter true,$(BUILDING_SYSTEM_IMAGE)),\
+	    $(call _apkcerts_write_line,BuildManifest,$(FSVERITY_APK_KEY_PATH).x509.pem,$(FSVERITY_APK_KEY_PATH).pk8,,system,$@)) \
 	  $(if $(filter true,$(BUILDING_SYSTEM_EXT_IMAGE)),\
             $(call _apkcerts_write_line,BuildManifestSystemExt,$(FSVERITY_APK_KEY_PATH).x509.pem,$(FSVERITY_APK_KEY_PATH).pk8,,system_ext,$@)))
 	# In case value of PACKAGES is empty.
