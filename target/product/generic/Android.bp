@@ -988,7 +988,6 @@ system_image_defaults {
         },
         both: {
             deps: [
-                "android.hardware.biometrics.fingerprint@2.1", // generic_system
                 "android.hardware.radio.config@1.0", // generic_system
                 "android.hardware.radio.deprecated@1.0", // generic_system
                 "android.hardware.radio@1.0", // generic_system
