@@ -7904,13 +7904,6 @@ $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make pa
 include $(BUILD_SYSTEM)/product-graph.mk
 
 # -----------------------------------------------------------------
-# Create SDK repository packages. Must be done after tasks/* since
-# we need the addon rules defined.
-ifneq ($(sdk_repo_goal),)
-include $(TOPDIR)development/build/tools/sdk_repo.mk
-endif
-
-# -----------------------------------------------------------------
 # Extract additional data files used in Layoutlib
 include $(BUILD_SYSTEM)/layoutlib_data.mk
 
