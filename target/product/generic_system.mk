@@ -59,7 +59,6 @@ PRODUCT_PACKAGES += libfwdlockengine
 # System libraries commonly depended on by things on the system_ext or product partitions.
 # These lists will be pruned periodically.
 PRODUCT_PACKAGES += \
-    android.hardware.biometrics.fingerprint@2.1 \
     android.hardware.radio@1.0 \
     android.hardware.radio@1.1 \
     android.hardware.radio@1.2 \
