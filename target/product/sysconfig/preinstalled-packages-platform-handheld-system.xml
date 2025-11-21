@@ -97,6 +97,7 @@
 
     <!-- Telephony -->
     <install-in-user-type package="com.android.phone">
+        <install-in user-type="SYSTEM" />
         <install-in user-type="FULL" />
         <install-in user-type="android.os.usertype.profile.MANAGED" />
         <install-in user-type="android.os.usertype.profile.SUPERVISING" />
