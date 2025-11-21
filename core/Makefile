@@ -7926,11 +7926,6 @@ ifneq (,$(strip $(PACK_DESKTOP_ESP_IMAGE)))
   PACK_IMAGE_DEPS += $(INSTALLED_ESPIMAGE_TARGET)
 endif # PACK_DESKTOP_ESP_IMAGE
 
-ifneq ($(filter dtb, $(AB_OTA_PARTITIONS)),)
-  PACK_IMAGE_DEPS += $(PRODUCT_OUT)/dtb.img
-  PACK_IMAGE_ARGS += --dtb-image $(PRODUCT_OUT)/dtb.img
-endif
-
 ifneq ($(filter dtbo, $(AB_OTA_PARTITIONS)),)
   PACK_IMAGE_DEPS += $(INSTALLED_DTBOIMAGE_TARGET)
   PACK_IMAGE_ARGS += --dtbo-image $(INSTALLED_DTBOIMAGE_TARGET)
