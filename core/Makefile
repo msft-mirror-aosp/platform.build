@@ -2660,7 +2660,8 @@ $(INSTALLED_RECOVERY_BUILD_PROP_TARGET): PRIVATE_RECOVERY_UI_PROPERTIES := \
     TARGET_RECOVERY_UI_BRIGHTNESS_FILE:brightness_file \
     TARGET_RECOVERY_UI_MAX_BRIGHTNESS_FILE:max_brightness_file \
     TARGET_RECOVERY_UI_BRIGHTNESS_NORMAL:brightness_normal_percent \
-    TARGET_RECOVERY_UI_BRIGHTNESS_DIMMED:brightness_dimmed_percent
+    TARGET_RECOVERY_UI_BRIGHTNESS_DIMMED:brightness_dimmed_percent \
+    TARGET_RECOVERY_UI_GRAPHICS_TIMEOUT_MS:graphics_timeout_ms
 
 # Parses the given list of build variables and writes their values as build properties if defined.
 # For example, if a target defines `TARGET_RECOVERY_UI_MARGIN_HEIGHT := 100`,
@@ -7904,13 +7905,6 @@ $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make pa
 include $(BUILD_SYSTEM)/product-graph.mk
 
 # -----------------------------------------------------------------
-# Create SDK repository packages. Must be done after tasks/* since
-# we need the addon rules defined.
-ifneq ($(sdk_repo_goal),)
-include $(TOPDIR)development/build/tools/sdk_repo.mk
-endif
-
-# -----------------------------------------------------------------
 # Extract additional data files used in Layoutlib
 include $(BUILD_SYSTEM)/layoutlib_data.mk
 
@@ -7931,11 +7925,6 @@ UPDATE_PARTITION_SCRIPT := $(HOST_OUT_EXECUTABLES)/update-partition
 ifneq (,$(strip $(PACK_DESKTOP_ESP_IMAGE)))
   PACK_IMAGE_DEPS += $(INSTALLED_ESPIMAGE_TARGET)
 endif # PACK_DESKTOP_ESP_IMAGE
-
-ifneq ($(filter dtb, $(AB_OTA_PARTITIONS)),)
-  PACK_IMAGE_DEPS += $(PRODUCT_OUT)/dtb.img
-  PACK_IMAGE_ARGS += --dtb-image $(PRODUCT_OUT)/dtb.img
-endif
 
 ifneq ($(filter dtbo, $(AB_OTA_PARTITIONS)),)
   PACK_IMAGE_DEPS += $(INSTALLED_DTBOIMAGE_TARGET)
