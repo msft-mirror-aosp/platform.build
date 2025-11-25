@@ -786,6 +786,11 @@ system_image_defaults {
             "zygote_next", // base_system (RELEASE_NATIVE_FRAMEWORK_PROTOTYPE)
         ],
         default: [],
+    }) + select(release_flag("RELEASE_AISEAL_FRAMEWORK"), {
+        true: [
+            "aisealhostservice", // base_system (RELEASE_AISEAL_FRAMEWORK)
+        ],
+        default: [],
     }),
     multilib: {
         common: {
