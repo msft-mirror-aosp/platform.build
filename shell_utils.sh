@@ -426,6 +426,8 @@ function setup_cartfs_incremental_build() {
     # Adding a file to track that the workspace is an incremental
     # build from Cartfs. This will be used for metrics.
     echo "${source_workspace}" > "${link_destination}/.cartfs-copied"
+    # Don't carry over the leftovers file from previous workspace.
+    rm -f "${link_destination}/.leftovers"
   else
     echo "No suitable build outputs matching the same repository found."
     echo "Starting from a fresh build output directory."
