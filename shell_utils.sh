@@ -379,9 +379,9 @@ function setup_cartfs_incremental_build() {
   local repo="$(basename "${top}")"
   local current_cartfs_folder="$(dirname "${link_destination}")"
   local target_workspace="$(basename "${current_cartfs_folder}")"
-  local source_workspace
-  local copy_from
-  local folders
+  local source_workspace=""
+  local copy_from=""
+  local folders=""
 
   folders=$(stat -c "%Y %n" ${cartfs_mount_point}/*/out 2>/dev/null | sort -nr | sed 's/^[0-9]\+ //')
   if [[ -n "${folders}" ]]; then
