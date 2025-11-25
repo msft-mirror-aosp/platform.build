@@ -411,14 +411,18 @@ function setup_cartfs_incremental_build() {
     echo "Copying content from $copy_from to $link_destination"
     # Filtering output to only include relevant information.
     local output_filter="connecting to|Rpc succeeded with OK status|Not yet implemented|success|Received trailing metadata from server"
-    grpc_cli call ${cartfs_endpoint} ${cartfs_rpc_copy_directory} \
-    'from_path: "'${copy_from#$cartfs_mount_point/}'"
-     to_path: "'${link_destination#$cartfs_mount_point/}'"' \
-      --channel_creds_type=insecure 2>&1 | grep -v -E "${output_filter}"
-    grpc_cli call ${cogfsd_endpoint} ${cogfsd_rpc_forkmtimes} \
+    if ! grpc_cli call ${cogfsd_endpoint} ${cogfsd_rpc_forkmtimes} \
     'source_workspace: "'${source_workspace}'"
      target_workspace: "'${target_workspace}'"' \
-      --channel_creds_type=insecure 2>&1 | grep -v -E "${output_filter}"
+      --channel_creds_type=insecure 2>&1 | grep -v -E "${output_filter}"; then
+      return 1
+    fi
+    if ! grpc_cli call ${cartfs_endpoint} ${cartfs_rpc_copy_directory} \
+    'from_path: "'${copy_from#$cartfs_mount_point/}'"
+     to_path: "'${link_destination#$cartfs_mount_point/}'"' \
+      --channel_creds_type=insecure 2>&1 | grep -v -E "${output_filter}"; then
+      return 1
+    fi
     # Adding a file to track that the workspace is an incremental
     # build from Cartfs. This will be used for metrics.
     echo "${source_workspace}" > "${link_destination}/.cartfs-copied"
