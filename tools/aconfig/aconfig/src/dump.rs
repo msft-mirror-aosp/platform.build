@@ -15,7 +15,8 @@
  */
 
 use aconfig_protos::{
-    ParsedFlagExt, ProtoFlagMetadata, ProtoFlagPermission, ProtoFlagState, ProtoTracepoint,
+    ParsedFlagExt, ProtoFlagMetadata, ProtoFlagPermission, ProtoFlagPurpose, ProtoFlagState,
+    ProtoFlagStorageBackend, ProtoTracepoint,
 };
 use aconfig_protos::{ProtoParsedFlag, ProtoParsedFlags};
 use anyhow::{anyhow, bail, Context, Result};
@@ -195,7 +196,31 @@ fn create_filter_predicate_single(filter: &str) -> Result<Box<DumpPredicate>> {
             let expected = arg.to_owned();
             Ok(Box::new(move |flag: &ProtoParsedFlag| flag.container() == expected))
         }
-        // metadata: not supported yet
+        "metadata.purpose" => {
+            let expected = enum_from_str(
+                &[
+                    ProtoFlagPurpose::PURPOSE_UNSPECIFIED,
+                    ProtoFlagPurpose::PURPOSE_FEATURE,
+                    ProtoFlagPurpose::PURPOSE_BUGFIX,
+                ],
+                arg,
+            )
+            .context(error_msg)?;
+            Ok(Box::new(move |flag: &ProtoParsedFlag| flag.metadata.purpose() == expected))
+        }
+        "metadata.storage" => {
+            let expected = enum_from_str(
+                &[
+                    ProtoFlagStorageBackend::UNSPECIFIED,
+                    ProtoFlagStorageBackend::ACONFIGD,
+                    ProtoFlagStorageBackend::DEVICE_CONFIG,
+                    ProtoFlagStorageBackend::NONE,
+                ],
+                arg,
+            )
+            .context(error_msg)?;
+            Ok(Box::new(move |flag: &ProtoParsedFlag| flag.metadata.storage() == expected))
+        }
         "fully_qualified_name" => {
             let expected = arg.to_owned();
             Ok(Box::new(move |flag: &ProtoParsedFlag| flag.fully_qualified_name() == expected))
@@ -410,7 +435,20 @@ mod tests {
                 "com.android.aconfig.test.enabled_rw",
             ]
         );
-        // metadata: not supported yet
+        assert_create_filter_predicate!(
+            "metadata.purpose:PURPOSE_BUGFIX",
+            &["com.android.aconfig.test.enabled_ro",]
+        );
+        assert_create_filter_predicate!(
+            "metadata.storage:NONE",
+            &[
+                "com.android.aconfig.test.disabled_ro",
+                "com.android.aconfig.test.enabled_fixed_ro",
+                "com.android.aconfig.test.enabled_fixed_ro_exported",
+                "com.android.aconfig.test.enabled_ro",
+                "com.android.aconfig.test.enabled_ro_exported"
+            ]
+        );
 
         // synthesized fields
         assert_create_filter_predicate!(
