@@ -88,8 +88,12 @@ fn dump_custom_format(flag: &ProtoParsedFlag, format: &str, output: &mut Vec<u8>
         trace.iter().map(|tracepoint| tracepoint.source()).collect::<Vec<_>>().join(", ")
     }
 
-    fn format_metadata(metadata: &ProtoFlagMetadata) -> String {
+    fn format_metadata_purpose(metadata: &ProtoFlagMetadata) -> String {
         format!("{:?}", metadata.purpose())
+    }
+
+    fn format_metadata_storage(metadata: &ProtoFlagMetadata) -> String {
+        format!("{:?}", metadata.storage())
     }
 
     let mut str = format
@@ -107,7 +111,8 @@ fn dump_custom_format(flag: &ProtoParsedFlag, format: &str, output: &mut Vec<u8>
         .replace("{is_fixed_read_only}", &format!("{}", flag.is_fixed_read_only()))
         .replace("{is_exported}", &format!("{}", flag.is_exported()))
         .replace("{container}", flag.container())
-        .replace("{metadata}", &format_metadata(&flag.metadata))
+        .replace("{metadata.purpose}", &format_metadata_purpose(&flag.metadata))
+        .replace("{metadata.storage}", &format_metadata_storage(&flag.metadata))
         // ParsedFlagExt functions
         .replace("{fully_qualified_name}", &flag.fully_qualified_name());
     str.push('\n');
@@ -294,7 +299,8 @@ mod tests {
         assert_custom_format!("{is_fixed_read_only}", "false\n");
         assert_custom_format!("{is_exported}", "false\n");
         assert_custom_format!("{container}", "system\n");
-        assert_custom_format!("{metadata}", "PURPOSE_BUGFIX\n");
+        assert_custom_format!("{metadata.purpose}", "PURPOSE_BUGFIX\n");
+        assert_custom_format!("{metadata.storage}", "NONE\n");
 
         assert_custom_format!("name={name}|state={state}", "name=enabled_ro|state=ENABLED\n");
         assert_custom_format!("{state}{state}{state}", "ENABLEDENABLEDENABLED\n");
