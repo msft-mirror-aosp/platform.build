@@ -387,7 +387,7 @@ mod tests {
         // Boolean offset is 27 + 3 * 1 = 30.
         assert_eq!(offset, 30usize);
         // 3rd-index boolean is false.
-        assert_eq!(flag_value_list.booleans[3], false);
+        assert!(!flag_value_list.booleans[3]);
     }
 
     #[test]
