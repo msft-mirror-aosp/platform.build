@@ -31,15 +31,20 @@
 Finalize resource values in <staging-public-group> tags
 and convert those to <staging-public-group-final>
 
-Usage: $ANDROID_BUILD_TOP/frameworks/base/tools/aapt2/tools/finalize_res.py \
-           $ANDROID_BUILD_TOP/frameworks/base/core/res/res/values/public-staging.xml \
-           $ANDROID_BUILD_TOP/frameworks/base/core/res/res/values/public-final.xml
+Build and execute a python binary using soong. This will included the aconfig flags for the lunched configuration.
+
+Usage: m finalize_res && \
+      finalize_res \
+      $ANDROID_BUILD_TOP/frameworks/base/core/res/res/values/public-staging.xml \
+      $ANDROID_BUILD_TOP/frameworks/base/core/res/res/values/public-final.xml
 """
 
+import importlib.resources
 import re
 import sys
 import subprocess
 from collections import defaultdict
+from protos import aconfig_pb2
 
 resTypes = ["attr", "id", "style", "string", "dimen", "color", "array", "drawable", "layout",
             "anim", "animator", "interpolator", "mipmap", "integer", "transition", "raw", "bool",
@@ -73,7 +78,7 @@ def finalize_item(comment_and_item):
 
     comment = re.search(' *<!--.+?-->\n', comment_and_item, flags=re.DOTALL).group(0)
 
-    match = re.search('<!-- @FlaggedApi\((.+?)\)', comment, flags=re.DOTALL)
+    match = re.search(r'<!-- @FlaggedApi\((.+?)\)', comment, flags=re.DOTALL)
     if match:
         flag = match.group(1)
     else:
@@ -89,8 +94,8 @@ def finalize_item(comment_and_item):
     if flag not in _aconfig_map:
         raise Exception("Unknown flag: " + flag)
 
-    # READ_ONLY-ENABLED is a magic string from printflags output below
-    if _aconfig_map[flag] != "READ_ONLY-ENABLED":
+    # Any flag that is not both READ_ONLY and ENABLED is left in the staging file.
+    if not _aconfig_map[flag]:
         _non_finalized_flags[flag].append(name)
         # Keep it as is in <staging-public-group> in public-staging.xml
         # Include as magic constant "removed_" in <staging-public-group-final> in public-final.xml
@@ -157,15 +162,23 @@ def collect_ids(raw):
         id = int(m.group(2), 16)
         _type_ids[type] = max(id + 1, _type_ids.get(type, 0))
 
-# This is a hack and assumes this script is run from the top directory
-output=subprocess.run("printflags --format='{fully_qualified_name} {permission}-{state}'", shell=True, capture_output=True, encoding="utf-8", check=True)
-for line in output.stdout.splitlines():
-    parts = line.split()
-    key = parts[0]
-    value = parts[1]
-    _aconfig_map[key]=value
+try:
+    with importlib.resources.files('res').joinpath('all_aconfig_declarations.pb').open('rb') as f:
+        parsed_flags = aconfig_pb2.parsed_flags.FromString(f.read())
+except FileNotFoundError as error:
+    print(error)
+    print("Could not access aconfig flags. Did you build the script using soong?")
+    sys.exit()
 
-_aconfig_map[NO_FLAG_MAGIC_CONSTANT]="READ_ONLY-DISABLED"
+for flag in parsed_flags.parsed_flag:
+    key = "{}.{}".format(flag.package, flag.name)
+    value = (
+        flag.permission == aconfig_pb2.flag_permission.READ_ONLY
+        and flag.state == aconfig_pb2.flag_state.ENABLED
+    )
+    _aconfig_map[key] = value
+
+_aconfig_map[NO_FLAG_MAGIC_CONSTANT] = False
 
 with open(sys.argv[1], "r+") as stagingFile:
     with open(sys.argv[2], "r+") as finalFile:
