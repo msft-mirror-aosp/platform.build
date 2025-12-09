@@ -103,6 +103,7 @@ ifeq ($(call module-in-vendor-or-product),true)
 endif
 
 # Check prebuilt ELF binaries.
+my_prebuilt_src_file :=
 ifdef LOCAL_INSTALLED_MODULE
   ifneq ($(LOCAL_CHECK_ELF_FILES),)
     ifneq ($(RELEASE_SOONG_CHECK_ELF_FILES),true)
