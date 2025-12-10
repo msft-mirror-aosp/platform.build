@@ -108,6 +108,7 @@ def main(argv: list[str]):
       binary_path=argv[0],
       daemon_target=edit_monitor.start,
       daemon_args=(args.path, args.dry_run, args.target_repo),
+      target_repo=args.target_repo,
   )
 
   try:
