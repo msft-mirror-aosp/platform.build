@@ -313,10 +313,13 @@ ifeq ($(RELEASE_CROSS_DEVICE_SYNC),true)
         CrossDeviceSync
 endif
 
-# Once Telecom is APEX, we will consolidate all deps
+# This is the telecom cmd binary, NOT Telecom APK.
+PRODUCT_PACKAGES += \
+    telecom
+
+# Once framework-telecom is APEX, the code will be included there.
 ifneq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
   PRODUCT_PACKAGES += \
-      telecom \
       framework-telecom
 
 endif
