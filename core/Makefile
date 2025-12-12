@@ -8031,31 +8031,6 @@ endif # BOARD_USES_DESKTOP_RECOVERY_SWAP_KERNEL
 
 endif # BOARD_USES_DESKTOP_RECOVERY_IMAGE
 
-# -----------------------------------------------------------------
-# Desktop pack update image hook.
-ifeq ($(BOARD_USES_DESKTOP_UPDATE_IMAGE),true)
-PACK_UPDATE_IMAGE_TARGET := $(PRODUCT_OUT)/android-desktop_update_image.bin
-PACK_UPDATE_IMAGE_ARGS := --noarchive --update --firmware $(GENERATED_FW_IMAGE) --partition-image $(GENERATED_PARTITION_IMAGE)
-
-ifneq (,$(strip $(PACK_UPDATE_IMAGE_EXPERIMENTAL)))
-PACK_UPDATE_IMAGE_ARGS += --experimental
-endif # PACK_UPDATE_IMAGE_EXPERIMENTAL
-
-$(PACK_UPDATE_IMAGE_TARGET): $(PACK_IMAGE_DEPS) $(PRODUCT_OUT)/update-kernel $(GENERATED_FW_IMAGE) $(GENERATED_PARTITION_IMAGE)
-	$(PACK_IMAGE_SCRIPT) --out_dir $(PRODUCT_OUT) $(PACK_UPDATE_IMAGE_ARGS) $(PACK_IMAGE_ARGS)
-
-PACKED_UPDATE_IMAGE_ARCHIVE_TARGET := $(PACK_UPDATE_IMAGE_TARGET).zst
-
-$(PACKED_UPDATE_IMAGE_ARCHIVE_TARGET): $(PACK_UPDATE_IMAGE_TARGET) | $(ZSTD)
-	$(ZSTD) -T0 -19 -fk $(PACK_UPDATE_IMAGE_TARGET)
-
-$(call dist-for-goals,dist_files,$(PACKED_UPDATE_IMAGE_ARCHIVE_TARGET))
-
-.PHONY: pack-update-image
-pack-update-image: $(PACK_UPDATE_IMAGE_TARGET)
-
-endif # BOARD_USES_DESKTOP_UPDATE_IMAGE
-
 PACK_MIGRATION_IMAGE_SCRIPT := $(HOST_OUT_EXECUTABLES)/pack_migration_image
 
 # -----------------------------------------------------------------
