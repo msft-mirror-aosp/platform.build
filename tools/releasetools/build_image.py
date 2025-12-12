@@ -366,8 +366,6 @@ def BuildImageMkfs(in_dir, prop_dict, out_file, target_out, fs_config):
       build_command.extend(["-T", str(prop_dict["timestamp"])])
     if "uuid" in prop_dict:
       build_command.extend(["-U", prop_dict["uuid"]])
-    if "block_list" in prop_dict:
-      build_command.extend(["--block-list-file", prop_dict["block_list"]])
     if "erofs_pcluster_size" in prop_dict:
       build_command.extend(["-C", prop_dict["erofs_pcluster_size"]])
     if "erofs_share_dup_blocks" in prop_dict:
