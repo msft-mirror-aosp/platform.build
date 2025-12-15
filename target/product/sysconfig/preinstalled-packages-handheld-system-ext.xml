@@ -35,4 +35,11 @@
     <install-in-user-type package="com.android.systemui.accessibility.accessibilitymenu">
         <install-in user-type="FULL" />
     </install-in-user-type>
+
+    <!-- Personal Context that provides AI features based on personal information -->
+    <install-in-user-type package="com.android.personalcontext">
+        <install-in user-type="FULL" />
+        <!-- OSI is only granted for Uid 0 -->
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
 </config>
