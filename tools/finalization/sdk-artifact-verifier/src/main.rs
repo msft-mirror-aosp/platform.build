@@ -22,7 +22,7 @@ use clap::Parser;
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
 
-use anyhow::{bail, Result};
+use anyhow::{bail, ensure, Context, Result};
 use std::collections::{HashMap, HashSet};
 
 #[derive(Parser, Debug)]
@@ -38,11 +38,26 @@ struct Args {
 fn main() -> Result<()> {
     let args = Args::parse();
 
-    let api = load(args.api_versions_path)?;
+    ensure!(
+        args.api_versions_path.exists(),
+        "api_versions_path does not exist: {:?}",
+        args.api_versions_path
+    );
 
-    // TODO Do this when parsing arguments and throw an informative exception if filename is wrong
+    if let Some(path) = &args.deprecated_at_birth_allowlist_path {
+        ensure!(path.exists(), "deprecated_at_birth_allowlist_path does not exist: {:?}", path);
+    }
+
+    let api = load(&args.api_versions_path).with_context(|| {
+        format!("Failed to load api versions from {:?}", args.api_versions_path)
+    })?;
+
     let allowlist: HashSet<String> = match &args.deprecated_at_birth_allowlist_path {
-        Some(path) => fs::read_to_string(path)?.lines().map(|line| line.to_string()).collect(),
+        Some(path) => fs::read_to_string(path)
+            .with_context(|| format!("Failed to read allowlist file at {:?}", path))?
+            .lines()
+            .map(|line| line.to_string())
+            .collect(),
         None => HashSet::new(),
     };
 
