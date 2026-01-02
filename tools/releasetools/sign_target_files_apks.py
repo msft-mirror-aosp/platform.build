@@ -186,6 +186,7 @@ import stat
 import sys
 import shlex
 import tempfile
+from typing import List
 import zipfile
 from xml.etree import ElementTree
 
@@ -714,32 +715,11 @@ def RegenerateBootOTA(input_tf_zip: zipfile.ZipFile, filename, input_ota):
       "Re-generating boot OTA {} using cmd {}".format(filename, args))
   ota_from_raw_img.main(args)
 
-
-def ProcessTargetFiles(input_tf_zip: zipfile.ZipFile, output_tf_zip: zipfile.ZipFile, misc_info,
+def ProcessTargetFileEntries(input_tf_zip: zipfile.ZipFile, output_tf_zip: zipfile.ZipFile, infolist: List[zipfile.ZipInfo], misc_info,
                        apk_keys, apex_keys, key_passwords,
                        platform_api_level, codename_to_api_level_map,
-                       compressed_extension):
-  # maxsize measures the maximum filename length, including the ones to be
-  # skipped.
-  try:
-    maxsize = max(
-        [len(os.path.basename(i.filename)) for i in input_tf_zip.infolist()
-         if GetApkFileInfo(i.filename, compressed_extension, [])[0]])
-  except ValueError:
-    # Sets this to zero for targets without APK files.
-    maxsize = 0
-
-  # Replace the AVB signing keys, if any.
-  ReplaceAvbSigningKeys(misc_info)
-  OPTIONS.info_dict = misc_info
-
-  # Rewrite the props in AVB signing args.
-  if misc_info.get('avb_enable') == 'true':
-    RewriteAvbProps(misc_info)
-
-  RegenerateKernelPartitions(input_tf_zip, output_tf_zip, misc_info)
-
-  for info in input_tf_zip.infolist():
+                       compressed_extension, maxsize):
+  for info in infolist:
     filename = info.filename
     if filename.startswith("IMAGES/"):
       continue
@@ -1016,6 +996,33 @@ def ProcessTargetFiles(input_tf_zip: zipfile.ZipFile, output_tf_zip: zipfile.Zip
         continue
       except KeyError:
         common.ZipWriteStr(output_tf_zip, out_info, data)
+
+
+def ProcessTargetFiles(input_tf_zip: zipfile.ZipFile, output_tf_zip: zipfile.ZipFile, misc_info,
+                       apk_keys, apex_keys, key_passwords,
+                       platform_api_level, codename_to_api_level_map,
+                       compressed_extension):
+  # maxsize measures the maximum filename length, including the ones to be
+  # skipped.
+  try:
+    maxsize = max(
+        [len(os.path.basename(i.filename)) for i in input_tf_zip.infolist()
+         if GetApkFileInfo(i.filename, compressed_extension, [])[0]])
+  except ValueError:
+    # Sets this to zero for targets without APK files.
+    maxsize = 0
+
+  # Replace the AVB signing keys, if any.
+  ReplaceAvbSigningKeys(misc_info)
+  OPTIONS.info_dict = misc_info
+
+  # Rewrite the props in AVB signing args.
+  if misc_info.get('avb_enable') == 'true':
+    RewriteAvbProps(misc_info)
+
+  RegenerateKernelPartitions(input_tf_zip, output_tf_zip, misc_info)
+  ProcessTargetFileEntries(input_tf_zip, output_tf_zip, input_tf_zip.infolist(), misc_info,
+                       apk_keys, apex_keys, key_passwords, platform_api_level, codename_to_api_level_map, compressed_extension, maxsize)
 
   if OPTIONS.replace_ota_keys:
     ReplaceOtaKeys(input_tf_zip, output_tf_zip, misc_info)
