@@ -417,6 +417,9 @@ ifneq ($(BUILD_OS),darwin)
   endif
 endif
 
+# Flags for Android Multiuser configuration
+$(call soong_config_set_bool,ANDROID_MULTIUSER,PRODUCT_USE_HSUM,$(if $(filter true,$(PRODUCT_USE_HSUM)),true,false))
+
 # Variables for qcom bluetooth modules.
 $(call soong_config_set,qcom_bluetooth,TARGET_BLUETOOTH_UART_DEVICE,$(TARGET_BLUETOOTH_UART_DEVICE))
 $(call soong_config_set_bool,qcom_bluetooth,BOARD_HAVE_QCOM_FM,$(if $(filter true,$(BOARD_HAVE_QCOM_FM)),true,false))
