@@ -232,7 +232,6 @@ PRODUCT_PACKAGES += \
     mdnsd \
     mediacodec.policy \
     mediaextractor \
-    mediametrics \
     media_profiles_V1_0.dtd \
     MediaProviderLegacy \
     mediaserver \
@@ -408,6 +407,14 @@ ifeq ($(RELEASE_WEBAPP_MODULE),true)
     PRODUCT_PACKAGES += \
        com.android.webapp \
        default-permissions-webapp.xml
+endif
+
+ifeq ($(RELEASE_MEDIAMETRICS_MODULE),true)
+    PRODUCT_PACKAGES += \
+        libmediametrics_packageinfo
+else
+    PRODUCT_PACKAGES += \
+        mediametrics
 endif
 
 ifneq (,$(RELEASE_RANGING_STACK))
