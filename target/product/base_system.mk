@@ -629,8 +629,7 @@ endif
 
 ifneq (,$(RELEASE_AISEAL_FRAMEWORK))
     PRODUCT_PACKAGES += \
-        aisealhostservice \
-        AppSearchAiSealConfig
+        aisealhostservice
 endif
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/runtime_libart.mk)
