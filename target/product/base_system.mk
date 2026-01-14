@@ -541,6 +541,9 @@ PRODUCT_SYSTEM_PROPERTIES += ro.surface_flinger.game_default_frame_rate_override
 PRODUCT_SYSTEM_PROPERTIES += persist.pcc.audit_mode.enabled=0
 PRODUCT_SYSTEM_PROPERTIES += persist.pcc.audit_mode.max_log_files=10
 PRODUCT_SYSTEM_PROPERTIES += persist.pcc.audit_mode.max_log_file_size_kb=10240
+PRODUCT_SYSTEM_PROPERTIES += persist.pcc.audit_mode.batching.enabled=1
+PRODUCT_SYSTEM_PROPERTIES += persist.pcc.audit_mode.batching.max_batch_size=100
+PRODUCT_SYSTEM_PROPERTIES += persist.pcc.audit_mode.batching.flush_time_ms=10000
 
 # When the flag RELEASE_ADBD_OPEN_VSOCK_PORT is enabled, open adbd on vsock port 8382 as default.
 ifneq ($(RELEASE_ADBD_OPEN_VSOCK_PORT),)
