@@ -788,6 +788,7 @@ system_image_defaults {
     }) + select(release_flag("RELEASE_AISEAL_FRAMEWORK"), {
         true: [
             "aisealhostservice", // base_system (RELEASE_AISEAL_FRAMEWORK)
+            "AppSearchAiSealConfig", // base_system (RELEASE_AISEAL_FRAMEWORK)
         ],
         default: [],
     }) + select(release_flag("RELEASE_WEBAPP_MODULE"), {
@@ -861,7 +862,6 @@ system_image_defaults {
                 "Stk", // generic_system
                 "Tag", // generic_system
                 "TeleService", // handheld_system
-                "Telecom", // handheld_system
                 "TelecomUi", // handheld_system
                 "Traceur", // handheld_system
                 "UserDictionaryProvider", // handheld_system
@@ -973,8 +973,11 @@ system_image_defaults {
                     "framework-network-security-config", // base_system
                 ],
             }) + select(release_flag("RELEASE_TELECOM_MAINLINE_MODULE"), {
-                true: [],
+                true: [
+                    "TelecomShim", // handheld_system
+                ],
                 default: [
+                    "Telecom", // handheld_system
                     "framework-telecom", // base_system
                 ],
             }) + select(release_flag("RELEASE_NPUMANAGER_MODULE"), {
