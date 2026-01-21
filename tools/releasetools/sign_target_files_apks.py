@@ -1231,6 +1231,11 @@ def ReplaceCerts(data):
   assert len(signatures) == len(set(signatures)), \
       "Found duplicate entries after cert replacement: {}".format(data)
 
+  # Verify that there are no placeholders anymore.
+  placeholders = [s for s in signatures if s.startswith("@")]
+  assert len(placeholders) == 0, \
+      "Found placeholders in mac_permissions.xml: {}".format(placeholders)
+
   return data
 
 
