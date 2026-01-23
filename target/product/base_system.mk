@@ -409,10 +409,7 @@ ifeq ($(RELEASE_WEBAPP_MODULE),true)
        default-permissions-webapp.xml
 endif
 
-ifeq ($(RELEASE_MEDIAMETRICS_MODULE),true)
-    PRODUCT_PACKAGES += \
-        libmediametrics_packageinfo
-else
+ifneq ($(RELEASE_MEDIAMETRICS_MODULE),true)
     PRODUCT_PACKAGES += \
         mediametrics
 endif
