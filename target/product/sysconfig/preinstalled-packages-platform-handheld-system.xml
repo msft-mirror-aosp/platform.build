@@ -156,4 +156,11 @@
         <install-in user-type="FULL" />
         <install-in user-type="android.os.usertype.profile.MANAGED" />
     </install-in-user-type>
+
+    <!-- Download Provider UI(DownloadProviderUi) -->
+    <install-in-user-type package="com.android.providers.downloads.ui">
+        <install-in user-type="FULL" />
+        <install-in user-type="android.os.usertype.profile.MANAGED" />
+        <install-in user-type="android.os.usertype.profile.PRIVATE" />
+    </install-in-user-type>
 </config>
