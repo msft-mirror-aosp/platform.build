@@ -174,7 +174,11 @@ public class SoongApiClient implements AutoCloseable {
         } else {
             baseOut = androidTop.resolve(DEFAULT_OUT_DIR_REL);
         }
-        return baseOut.resolve("soong/soong_api/soong_api.db");
+        String product = System.getenv("TARGET_PRODUCT");
+        if (product == null || product.isEmpty()) {
+            product = "generic";
+        }
+        return baseOut.resolve("soong/soong_api").resolve(product).resolve("soong_api.db");
     }
 
     private void ensureBuildArtifacts(boolean rebuild) throws IOException, InterruptedException {
