@@ -783,7 +783,6 @@ system_image_defaults {
         ],
     }) + select(release_flag("RELEASE_NATIVE_FRAMEWORK_PROTOTYPE"), {
         true: [
-            "libandroid_native_denylist", // base_system (RELEASE_NATIVE_FRAMEWORK_PROTOTYPE)
             "zygote_next", // base_system (RELEASE_NATIVE_FRAMEWORK_PROTOTYPE)
         ],
         default: [],
