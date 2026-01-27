@@ -97,20 +97,21 @@ mod tests {
         //   - the value before the decimal separator is identical to RELEASE_PLATFORM_SDK_VERSION
         //     (e.g. 36.0 and 36)
         for release_config in RELEASE_CONFIGS.flags.keys() {
-            let version_full =
+            let sdk_int_full =
                 &RELEASE_CONFIGS.flags[release_config]["RELEASE_PLATFORM_SDK_VERSION_FULL"];
-            if version_full.is_empty() {
+            if sdk_int_full.is_empty() {
                 // skip this release config if it doesn't set RELEASE_PLATFORM_SDK_VERSION_FULL
                 continue;
             }
             assert!(
-                version_full.parse::<f32>().is_ok(),
-                "failed to convert value ({version_full}) of RELEASE_PLATFORM_SDK_VERSION_FULL for {release_config} to f32"
+                sdk_int_full.parse::<f32>().is_ok(),
+                "failed to convert value ({sdk_int_full}) of RELEASE_PLATFORM_SDK_VERSION_FULL for {release_config} to f32"
             );
-            let (integer_part, _) = version_full.split_once(".").unwrap_or_else(|| panic!("value of RELEASE_PLATFORM_SDK_VERSION_FULL ({version_full}) for {release_config} doesn't have expected format"));
+            let (integer_part, _) = sdk_int_full.split_once(".").unwrap_or_else(|| panic!("value of RELEASE_PLATFORM_SDK_VERSION_FULL ({sdk_int_full}) for {release_config} doesn't have expected format"));
+            let sdk_int = &RELEASE_CONFIGS.flags[release_config]["RELEASE_PLATFORM_SDK_VERSION"];
             assert_eq!(
-                integer_part,
-                RELEASE_CONFIGS.flags[release_config]["RELEASE_PLATFORM_SDK_VERSION"]
+                integer_part, sdk_int,
+                "in release config {release_config}, expected parity between the integer part ({integer_part}) of RELEASE_PLATFORM_SDK_VERSION_FULL ({sdk_int_full}) and RELEASE_PLATFORM_SDK_VERSION ({sdk_int})"
             );
         }
     }
