@@ -595,6 +595,7 @@ endif
 
 ifneq (,$(RELEASE_NATIVE_FRAMEWORK_PROTOTYPE))
     PRODUCT_PACKAGES += \
+        libandroid_native_denylist \
         zygote_next
 endif
 
