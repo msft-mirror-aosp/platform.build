@@ -340,8 +340,7 @@ endef
 # $1 is the namespace. $2 is the variable name. $3 is the variable value.
 # Ex: $(call soong_config_set_bool,acme,COOL_FEATURE,34)
 define soong_config_set_int
-$(call soong_config_define_internal,$1,$2) \
-$(if $(call math_is_int,$3),,$(error soong_config_set_int called with non-integer value $(3)))
+$(call soong_config_define_internal,$1,$2)
 $(eval SOONG_CONFIG_$(strip $1)_$(strip $2):=$(strip $3))
 $(eval SOONG_CONFIG_TYPE_$(strip $1)_$(strip $2):=int)
 endef
