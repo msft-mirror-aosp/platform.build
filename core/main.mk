@@ -1867,6 +1867,78 @@ $(SOONG_OUT_DIR)/compliance-metadata/$(TARGET_PRODUCT)/make_modules.csv:
 $(SOONG_OUT_DIR)/compliance-metadata/$(TARGET_PRODUCT)/installed_files.stamp: $(installed_files)
 	touch $@
 
+# -----------------------------------------------------------------
+# ==============================================================================
+# Soong API Integration (Analysis-Time)
+# ==============================================================================
+_MAKE_METADATA_JSON := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/make-module-metadata-analysis.json
+_FINAL_COMBINED_ZIP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api.zip
+_PURE_SOONG_ZIP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api_pure.zip
+_MERGE_STAMP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api_merged.stamp
+
+define add-make-module-to-json
+  $(call add_json_map_anon) \
+    $(call add_json_str, name, $(1)) \
+    $(call add_json_str, type, $(sort $(ALL_MODULES.$(1).MAKE_MODULE_TYPE))) \
+    $(call add_json_list, path, $(sort $(ALL_MODULES.$(1).PATH))) \
+    $(call add_json_list, installed, $(sort $(ALL_MODULES.$(1).INSTALLED))) \
+    $(call add_json_bool, is_make_module, true) \
+  $(call end_json_map)
+endef
+
+# Preparing make module json content.
+_make_modules := $(strip $(foreach m,$(ALL_MODULES),$(if $(ALL_MODULES.$(m).IS_SOONG_MODULE),,$(m))))
+
+_json_contents := [$(newline)
+_json_indent := $(4space)
+
+ifneq ($(_make_modules),)
+  $(foreach m,$(_make_modules),$(call add-make-module-to-json,$(m)))
+endif
+
+_json_contents := $(subst $(comma)$(newline)__SV_END,$(newline),$(_json_contents)__SV_END)]$(newline)
+
+# Write it to file
+_make_metadata_json := \
+  $(shell mkdir -p $(dir $(_MAKE_METADATA_JSON))) \
+  $(file >$(_MAKE_METADATA_JSON),$(_json_contents))
+
+# Merge and update soong_api.zip IN-PLACE
+_make_metadata_soong_integration := \
+  $(shell \
+    if [ ! -f "$(_FINAL_COMBINED_ZIP)" ]; then \
+      echo "[SNAPI] ERROR: Final Soong Zip not found at $(_FINAL_COMBINED_ZIP)"; \
+      exit 1; \
+    fi; \
+    \
+    if [ ! -f "$(_MERGE_STAMP)" ] || [ "$(_FINAL_COMBINED_ZIP)" -nt "$(_MERGE_STAMP)" ]; then \
+      cp -f "$(_FINAL_COMBINED_ZIP)" "$(_PURE_SOONG_ZIP)"; \
+    fi; \
+    \
+    if [ ! -f "$(_PURE_SOONG_ZIP)" ]; then \
+      echo "[SNAPI] ERROR: Pure soong zip backup missing!"; \
+      exit 1; \
+    fi; \
+    \
+    td=$$(mktemp -d) && \
+    unzip -qj -p "$(_PURE_SOONG_ZIP)" soong_api.json > $$td/soong_api.json && \
+    truncate -s -1 $$td/soong_api.json && \
+    echo -n "," >> $$td/soong_api.json && \
+    tail -c +2 $(_MAKE_METADATA_JSON) >> $$td/soong_api.json && \
+    zip -qj "$(_FINAL_COMBINED_ZIP)" $$td/soong_api.json && \
+    touch "$(_MERGE_STAMP)" && \
+    rm -rf $$td \
+  )
+
+ifneq ($(.SHELLSTATUS),0)
+  $(error $(_make_metadata_soong_integration))
+endif
+
+# ==============================================================================
+# End Soong API Integration (Analysis-Time)
+# ==============================================================================
+# -----------------------------------------------------------------
+
 # Remove the always_dirty_file.txt whenever the makefile is evaluated
 $(shell rm -f $(PRODUCT_OUT)/always_dirty_file.txt)
 $(PRODUCT_OUT)/always_dirty_file.txt:
