@@ -234,7 +234,6 @@ PRODUCT_PACKAGES += \
     mediacodec.policy \
     mediaextractor \
     media_profiles_V1_0.dtd \
-    MediaProviderLegacy \
     mediaserver \
     mke2fs \
     mkfs.erofs \
