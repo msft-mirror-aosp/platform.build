@@ -583,7 +583,7 @@ def SignApk(data, keyname, pw, platform_api_level, codename_to_api_level_map,
   common.SignFile(unsigned.name, signed.name, keyname, pw,
                   min_api_level=min_api_level,
                   codename_to_api_level_map=codename_to_api_level_map,
-                  apk_logging_on_success=OPTIONS.apk_logging_on_success)
+                  log_on_success=OPTIONS.apk_logging_on_success)
 
   data = None
   if is_compressed:
