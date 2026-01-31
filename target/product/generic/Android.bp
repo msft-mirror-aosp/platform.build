@@ -799,7 +799,6 @@ system_image_defaults {
         default: [],
     }) + select(release_flag("RELEASE_MEDIAMETRICS_MODULE"), {
         true: [
-            "libmediametrics_packageinfo",
         ],
         default: [
             "mediametrics", // base_system (RELEASE_MEDIAMETRICS_MODULE)
