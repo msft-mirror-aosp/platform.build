@@ -74,10 +74,6 @@ generic_symlinks = [
         name: "odm/app",
     },
     {
-        target: "/vendor/odm/apex",
-        name: "odm/apex",
-    },
-    {
         target: "/vendor/odm/bin",
         name: "odm/bin",
     },
