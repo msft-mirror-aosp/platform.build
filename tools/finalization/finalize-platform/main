@@ -84,6 +84,10 @@ case "$command" in
         error "not yet implemented"
         exit 1
         ;;
+    apply-patches)
+        require_patch_dir_in
+        apply_patches_from_patchdir "$patch_dir_in"
+        ;;
     *)
         error "unexpected command: $command"
         exit 1
