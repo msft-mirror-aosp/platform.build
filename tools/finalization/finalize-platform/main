@@ -24,11 +24,28 @@ if [[ -z "$command" ]]; then
 fi
 shift
 case "$command" in
-    hello-world)
-        info "Hello world! The root of the Android tree is $top"
+    finalize-module-sdks)
+        error "not yet implemented"
+        exit 1
+        ;;
+    finalize-resources)
+        error "not yet implemented"
+        exit 1
+        ;;
+    finalize-ndk)
+        error "not yet implemented"
+        exit 1
+        ;;
+    finalize-platform-sdk)
+        error "not yet implemented"
+        exit 1
+        ;;
+    finalize-release-configs)
+        error "not yet implemented"
+        exit 1
         ;;
     *)
-        echo "error: unexpected command: $command"
+        error "unexpected command: $command"
         exit 1
         ;;
 esac
