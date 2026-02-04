@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The major part of the next $major.$minor SDK version to finalize
-major=37
+# The major part of the next $MAJOR.$MINOR SDK version to finalize
+MAJOR=37
 
-# The minor part of the next $major.$minor SDK version to finalize
-minor=0
+# The minor part of the next $MAJOR.$MINOR SDK version to finalize
+MINOR=0
 
 # The SDK extension version to finalize (as part of the platform)
-sdk_ext_version=22
+SDK_EXT_VERSION=22
 
 # The topic branch to perform the work on
-branch="finalize-$major.$minor"
+BRANCH="finalize-$MAJOR.$MINOR"
 
 # vi: expandtab sw=4 ts=4

@@ -53,7 +53,7 @@ function error() {
 
 # Create a git commit.
 #
-# Will create the topic $branch and add all modified files in a given project
+# Will create the topic $BRANCH and add all modified files in a given project
 # before committing the changes.
 #
 # $1: project path relative to $top
@@ -62,14 +62,14 @@ function git_commit() {
     local project="$1"
 
     pushd "$top/$project"
-    repo start "$branch" .
+    repo start "$BRANCH" .
     git add .
     git commit -F -
     popd
 }
 
 # Traverse the Android tree and create patch files for all commits on the topic
-# $branch.
+# $BRANCH.
 #
 # $1: path to directory in which to store the patch files
 function format_patches_into_patchdir() {
@@ -79,16 +79,16 @@ function format_patches_into_patchdir() {
     # repo forall has a timeout and formatting patches in prebuilts/sdk will
     # trigger this timeout, so only use repo forall to get the list of projects
     for path in $(repo forall -c pwd); do
-        if [[ "$(git -C "$path" branch --show-current)" == "$branch" ]]; then
+        if [[ "$(git -C "$path" branch --show-current)" == "$BRANCH" ]]; then
             project="${path#$top/}"
             mkdir -p "$patch_dir/$project"
-            git -C "$path" format-patch -o "$patch_dir/$project" "$branch" ^goog/main
+            git -C "$path" format-patch -o "$patch_dir/$project" "$BRANCH" ^goog/main
         fi
     done
 }
 
 
-# Create the topic $branch and apply patches to a given project
+# Create the topic $BRANCH and apply patches to a given project
 #
 # $1: project path relative to $top
 # $2, ...: paths to patch files to apply
@@ -97,7 +97,7 @@ function apply_patches() {
     shift
 
     pushd "$top/$project"
-    repo start "$branch" .
+    repo start "$BRANCH" .
 
     set +e
     git am --whitespace=nowarn $*
@@ -110,7 +110,7 @@ function apply_patches() {
     popd
 }
 
-# Create the topic $branch and apply patches to the Android tree
+# Create the topic $BRANCH and apply patches to the Android tree
 #
 # The patches are expected to have been created by
 # format_patches_into_patchdir.
