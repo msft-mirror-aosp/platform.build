@@ -20,11 +20,6 @@ top="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 # Add the host bin directory to the PATH so that tools can be found by CI
 export PATH="$top/${OUT_DIR:-out}/host/linux-x86/bin:$PATH"
 
-# Change directory relative to the top of the Android tree
-function croot() {
-    \cd "$top/$1"
-}
-
 # Define the m function to run the build.
 # This function uses the TARGET_PRODUCT, TARGET_RELEASE, and TARGET_BUILD_VARIANT environment variables if they are set.
 # Otherwise, it uses default values (sdk, sdk_finalization, and userdebug respectively).
@@ -66,10 +61,11 @@ function error() {
 function git_commit() {
     local project="$1"
 
-    croot "$project"
+    pushd "$top/$project"
     repo start "$branch" .
     git add .
     git commit -F -
+    popd
 }
 
 # Traverse the Android tree and create patch files for all commits on the topic
@@ -100,7 +96,7 @@ function apply_patches() {
     local project="$1"
     shift
 
-    croot $project
+    pushd "$top/$project"
     repo start "$branch" .
 
     set +e
@@ -111,7 +107,7 @@ function apply_patches() {
         exit 1
     fi
     set -e
-    croot
+    popd
 }
 
 # Create the topic $branch and apply patches to the Android tree
@@ -127,7 +123,6 @@ function apply_patches_from_patchdir() {
             "$project" \
             $(ls $patch_dir/$project/*.patch | sort)
     done
-    croot
 }
 
 # vi: expandtab sw=4 ts=4
