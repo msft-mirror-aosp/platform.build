@@ -91,4 +91,43 @@ function format_patches_into_patchdir() {
     done
 }
 
+
+# Create the topic $branch and apply patches to a given project
+#
+# $1: project path relative to $top
+# $2, ...: paths to patch files to apply
+function apply_patches() {
+    local project="$1"
+    shift
+
+    croot $project
+    repo start "$branch" .
+
+    set +e
+    git am --whitespace=nowarn $*
+    if [[ $? -ne 0 ]]; then
+        error "$project: failed to apply all patches"
+        git am --abort
+        exit 1
+    fi
+    set -e
+    croot
+}
+
+# Create the topic $branch and apply patches to the Android tree
+#
+# The patches are expected to have been created by
+# format_patches_into_patchdir.
+#
+# $1: path to directory of patches
+function apply_patches_from_patchdir() {
+    local patch_dir="$1"
+    for project in $(find $patch_dir -type f -printf "%P\n" | xargs dirname | sort -u); do
+        apply_patches \
+            "$project" \
+            $(ls $patch_dir/$project/*.patch | sort)
+    done
+    croot
+}
+
 # vi: expandtab sw=4 ts=4
