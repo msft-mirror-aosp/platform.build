@@ -72,4 +72,23 @@ function git_commit() {
     git commit -F -
 }
 
+# Traverse the Android tree and create patch files for all commits on the topic
+# $branch.
+#
+# $1: path to directory in which to store the patch files
+function format_patches_into_patchdir() {
+    local patch_dir="$1"
+    mkdir -p $patch_dir
+
+    # repo forall has a timeout and formatting patches in prebuilts/sdk will
+    # trigger this timeout, so only use repo forall to get the list of projects
+    for path in $(repo forall -c pwd); do
+        if [[ "$(git -C "$path" branch --show-current)" == "$branch" ]]; then
+            project="${path#$top/}"
+            mkdir -p "$patch_dir/$project"
+            git -C "$path" format-patch -o "$patch_dir/$project" "$branch" ^goog/main
+        fi
+    done
+}
+
 # vi: expandtab sw=4 ts=4
