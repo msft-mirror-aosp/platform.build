@@ -56,4 +56,20 @@ function error() {
     fi
 }
 
+# Create a git commit.
+#
+# Will create the topic $branch and add all modified files in a given project
+# before committing the changes.
+#
+# $1: project path relative to $top
+# stdin: commit message
+function git_commit() {
+    local project="$1"
+
+    croot "$project"
+    repo start "$branch" .
+    git add .
+    git commit -F -
+}
+
 # vi: expandtab sw=4 ts=4
