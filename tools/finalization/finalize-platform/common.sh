@@ -20,6 +20,9 @@ top="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 # Add the host bin directory to the PATH so that tools can be found by CI
 export PATH="$top/${OUT_DIR:-out}/host/linux-x86/bin:$PATH"
 
+# The current build ID (set if running on a build server)
+BUILD_NUMBER=${BUILD_NUMBER:=local-build}
+
 # Define the m function to run the build.
 # This function uses the TARGET_PRODUCT, TARGET_RELEASE, and TARGET_BUILD_VARIANT environment variables if they are set.
 # Otherwise, it uses default values (sdk, sdk_finalization, and userdebug respectively).
