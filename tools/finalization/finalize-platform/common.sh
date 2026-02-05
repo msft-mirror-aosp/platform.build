@@ -101,15 +101,7 @@ function apply_patches() {
 
     pushd "$top/$project"
     repo start "$BRANCH" .
-
-    set +e
     git am --whitespace=nowarn $*
-    if [[ $? -ne 0 ]]; then
-        error "$project: failed to apply all patches"
-        git am --abort
-        exit 1
-    fi
-    set -e
     popd
 }
 
