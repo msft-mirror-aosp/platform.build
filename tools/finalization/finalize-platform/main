@@ -35,6 +35,7 @@ fi
 shift
 
 patch_dir=""
+mainline_sdks_dir=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --patch-dir)
@@ -45,11 +46,20 @@ while [[ $# -gt 0 ]]; do
             patch_dir="$(readlink -f "$2")"
             shift 2
             ;;
+        --mainline-sdks-dir)
+            if [[ -z "$2" ]]; then
+                error "--mainline-sdks-dir: missing <value>"
+                exit 1
+            fi
+            mainline_sdks_dir="$(readlink -f "$2")"
+            shift 2
+            ;;
     esac
 done
 
 case "$command" in
     finalize-module-sdks)
+        require_arg "--mainline-sdks-dir" "mainline_sdks_dir"
         source "$(dirname "$0")"/finalize-module-sdks.sh
         ;;
     finalize-resources)
