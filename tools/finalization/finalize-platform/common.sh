@@ -17,6 +17,11 @@
 # Calculate the top of the android source tree
 top="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 
+# Directory that holds the static patches that are included in this script (in
+# contrast to the user supplied --patch_dir_in and --patch_dir_out directories
+# that are used to dynamically create or apply patches)
+BUNDLED_PATCHES="$(readlink -f $(dirname "${BASH_SOURCE[0]}")/patches)"
+
 # Add the host bin directory to the PATH so that tools can be found by CI
 export PATH="$top/${OUT_DIR:-out}/host/linux-x86/bin:$PATH"
 
@@ -90,7 +95,6 @@ function format_patches_into_patchdir() {
     done
 }
 
-
 # Create the topic $BRANCH and apply patches to a given project
 #
 # $1: project path relative to $top
@@ -118,6 +122,36 @@ function apply_patches_from_patchdir() {
             "$project" \
             $(ls $patch_dir/$project/*.patch | sort)
     done
+}
+
+# Set build flags for the given release config.
+#
+# $1: the release config
+# $2, ...: KEY=VALUE pairs of build flags and the value to assign them
+function set_build_flags() {
+    local release_config="$1"
+    shift
+
+    case "$release_config" in
+        "next" | "trunk")
+            local project="vendor/google_shared/build/release"
+            ;;
+        "trunk_staging")
+            local project="build/release"
+            ;;
+        "sdk_finalization")
+            local project="vendor/google/release"
+            ;;
+        *)
+            error "unexpected release config $release_config"
+            exit 1
+    esac
+
+    build-flag --quiet --release=$release_config set --dir $project $@
+    git_commit $project \
+<<EOF
+$release_config: update SDK related build flag(s)
+EOF
 }
 
 # vi: expandtab sw=4 ts=4

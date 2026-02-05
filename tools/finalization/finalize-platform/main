@@ -70,8 +70,7 @@ case "$command" in
         exit 1
         ;;
     finalize-platform-sdk)
-        error "not yet implemented"
-        exit 1
+        source "$(dirname "$0")"/finalize-platform-sdk.sh
         ;;
     finalize-release-configs)
         error "not yet implemented"

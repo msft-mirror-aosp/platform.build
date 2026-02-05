@@ -23,6 +23,9 @@ MINOR=0
 # The SDK extension version to finalize (as part of the platform)
 SDK_EXT_VERSION=22
 
+# The bug used to track the finalization
+BUG=480974361
+
 # The topic branch to perform the work on
 BRANCH="finalize-$MAJOR.$MINOR"
 
