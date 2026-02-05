@@ -867,7 +867,6 @@ system_image_defaults {
                 "Stk", // generic_system
                 "Tag", // generic_system
                 "TeleService", // handheld_system
-                "TelecomUi", // handheld_system
                 "Traceur", // handheld_system
                 "UserDictionaryProvider", // handheld_system
                 "VpnDialogs", // handheld_system
@@ -983,6 +982,7 @@ system_image_defaults {
                 ],
                 default: [
                     "Telecom", // handheld_system
+                    "TelecomUi", // handheld_system
                     "framework-telecom", // base_system
                 ],
             }) + select(release_flag("RELEASE_NPUMANAGER_MODULE"), {
