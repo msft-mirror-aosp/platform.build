@@ -64,8 +64,9 @@ function require_patch_dir_out() {
 
 case "$command" in
     finalize-module-sdks)
-        error "not yet implemented"
-        exit 1
+        require_patch_dir_out
+        source "$(dirname "$0")"/finalize-module-sdks.sh
+        format_patches_into_patchdir "$patch_dir_out"
         ;;
     finalize-resources)
         require_patch_dir_out
