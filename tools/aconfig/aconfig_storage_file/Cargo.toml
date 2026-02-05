@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["cargo"]
+default = ["cargo", "test_utils"]
 cargo = []
 test_utils = []
 
