@@ -20,11 +20,6 @@ top="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 # Add the host bin directory to the PATH so that tools can be found by CI
 export PATH="$top/${OUT_DIR:-out}/host/linux-x86/bin:$PATH"
 
-# Change directory relative to the top of the Android tree
-function croot() {
-    \cd "$top/$1"
-}
-
 # Define the m function to run the build.
 # This function uses the TARGET_PRODUCT, TARGET_RELEASE, and TARGET_BUILD_VARIANT environment variables if they are set.
 # Otherwise, it uses default values (sdk, sdk_finalization, and userdebug respectively).
@@ -54,6 +49,80 @@ function error() {
     else
         echo -e "${timestamp} ERROR $1"
     fi
+}
+
+# Create a git commit.
+#
+# Will create the topic $BRANCH and add all modified files in a given project
+# before committing the changes.
+#
+# $1: project path relative to $top
+# stdin: commit message
+function git_commit() {
+    local project="$1"
+
+    pushd "$top/$project"
+    repo start "$BRANCH" .
+    git add .
+    git commit -F -
+    popd
+}
+
+# Traverse the Android tree and create patch files for all commits on the topic
+# $BRANCH.
+#
+# $1: path to directory in which to store the patch files
+function format_patches_into_patchdir() {
+    local patch_dir="$1"
+    mkdir -p $patch_dir
+
+    # repo forall has a timeout and formatting patches in prebuilts/sdk will
+    # trigger this timeout, so only use repo forall to get the list of projects
+    for path in $(repo forall -c pwd); do
+        if [[ "$(git -C "$path" branch --show-current)" == "$BRANCH" ]]; then
+            project="${path#$top/}"
+            mkdir -p "$patch_dir/$project"
+            git -C "$path" format-patch -o "$patch_dir/$project" "$BRANCH" ^goog/main
+        fi
+    done
+}
+
+
+# Create the topic $BRANCH and apply patches to a given project
+#
+# $1: project path relative to $top
+# $2, ...: paths to patch files to apply
+function apply_patches() {
+    local project="$1"
+    shift
+
+    pushd "$top/$project"
+    repo start "$BRANCH" .
+
+    set +e
+    git am --whitespace=nowarn $*
+    if [[ $? -ne 0 ]]; then
+        error "$project: failed to apply all patches"
+        git am --abort
+        exit 1
+    fi
+    set -e
+    popd
+}
+
+# Create the topic $BRANCH and apply patches to the Android tree
+#
+# The patches are expected to have been created by
+# format_patches_into_patchdir.
+#
+# $1: path to directory of patches
+function apply_patches_from_patchdir() {
+    local patch_dir="$1"
+    for project in $(find $patch_dir -type f -printf "%P\n" | xargs dirname | sort -u); do
+        apply_patches \
+            "$project" \
+            $(ls $patch_dir/$project/*.patch | sort)
+    done
 }
 
 # vi: expandtab sw=4 ts=4
