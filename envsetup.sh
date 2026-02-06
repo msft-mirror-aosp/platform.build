@@ -1072,9 +1072,8 @@ function source_vendorsetup() {
     local vendorsetups=()
 
     # Find all relevant files in a single traversal to improve performance.
-    local found_files=$(cd "$T" && find -L device vendor product -maxdepth 4 \( -name 'allowed-vendorsetup_sh-files' -o -name 'vendorsetup.sh' \) 2>/dev/null | sort)
-
-    for f in $found_files; do
+    while IFS= read -r f; do
+        if [[ -z "$f" ]]; then continue; fi
         if [[ "$f" == *allowed-vendorsetup_sh-files ]]; then
             if [ -n "$allowed" ]; then
                 echo "More than one 'allowed_vendorsetup_sh-files' file found, not including any vendorsetup.sh files:"
@@ -1086,7 +1085,7 @@ function source_vendorsetup() {
         elif [[ "$f" == *vendorsetup.sh ]]; then
             vendorsetups+=("$f")
         fi
-    done
+    done < <(cd "$T" && find -L device vendor product -maxdepth 4 \( -name 'allowed-vendorsetup_sh-files' -o -name 'vendorsetup.sh' \) 2>/dev/null | sort)
 
     local allowed_files=()
     if [ -n "$allowed" ]; then
