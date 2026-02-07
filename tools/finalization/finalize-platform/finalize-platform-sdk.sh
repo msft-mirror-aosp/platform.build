@@ -52,7 +52,7 @@ m sdk sdk_repo dist
 #
 # TODO: extract the logic of update_framework in update_prebuilts.py (and
 # rewrite to be more readable), but for now, call the legacy script
-$top/prebuilts/sdk/update_prebuilts/update_prebuilts.py \
+$TOP/prebuilts/sdk/update_prebuilts/update_prebuilts.py \
     -f $MAJOR \
     --local_mode \
     --bug $BUG \
