@@ -76,8 +76,7 @@ case "$command" in
         source "$(dirname "$0")"/finalize-platform-sdk.sh
         ;;
     finalize-release-configs)
-        error "not yet implemented"
-        exit 1
+        source "$(dirname "$0")"/finalize-release-configs.sh
         ;;
     apply-patches)
         require_arg "--patch-dir" "patch_dir"

@@ -23,6 +23,9 @@ MINOR=0
 # The SDK extension version to finalize (as part of the platform)
 SDK_EXT_VERSION=22
 
+# The next Android "marketing version", e.g. Android 16 for Baklava
+MARKETING_VERSION=17
+
 # The bug used to track the finalization
 BUG=480974361
 
