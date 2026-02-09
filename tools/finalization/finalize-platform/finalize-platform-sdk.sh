@@ -32,6 +32,11 @@ apply_patches \
     frameworks/base \
     "$BUNDLED_PATCHES"/frameworks/base/0001-C-is-37.patch
 
+# set SDK extension versions (or $SDK_EXT_VERSION won't appear in api-versions.xml)
+for release_config in next trunk trunk_staging; do
+    set_build_flags $release_config RELEASE_PLATFORM_SDK_EXTENSION_VERSION=$SDK_EXT_VERSION
+done
+
 # build the SDK
 set_build_flags next RELEASE_PLATFORM_PROSPECTIVE_SDK_VERSION_FULL=37.0
 m sdk sdk_repo dist
