@@ -16,8 +16,8 @@
 
 m finalize_res
 finalize_res \
-    "$top/frameworks/base/core/res/res/values/public-staging.xml" \
-    "$top/frameworks/base/core/res/res/values/public-final.xml"
+    "$TOP/frameworks/base/core/res/res/values/public-staging.xml" \
+    "$TOP/frameworks/base/core/res/res/values/public-final.xml"
 
 m update-api
 

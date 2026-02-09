@@ -35,7 +35,7 @@ function error() {
 }
 
 # Calculate the top of the android source tree
-top="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
+TOP="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 
 # Directory that holds the static patches that are included in this script (in
 # contrast to the user supplied --patch-dir directory that is used to
@@ -43,7 +43,7 @@ top="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 BUNDLED_PATCHES="$(readlink -f $(dirname "${BASH_SOURCE[0]}")/patches)"
 
 # Add the host bin directory to the PATH so that tools can be found by CI
-export PATH="$top/${OUT_DIR:-out}/host/linux-x86/bin:$PATH"
+export PATH="$TOP/${OUT_DIR:-out}/host/linux-x86/bin:$PATH"
 
 # This is only set if running on the build server
 RUNNING_ON_BUILD_SERVER=${BUILD_NUMBER:=}
@@ -68,7 +68,7 @@ PROJECTS+=(prebuilts/sdk)
 PROJECTS+=(tools/platform-compat)
 PROJECTS+=(vendor/google/release)
 PROJECTS+=(vendor/google_shared/build/release)
-PROJECTS+=($(cd $top && find prebuilts/module_sdk -mindepth 1 -maxdepth 1 -type d))
+PROJECTS+=($(cd $TOP && find prebuilts/module_sdk -mindepth 1 -maxdepth 1 -type d))
 
 for project in $(cd $BUNDLED_PATCHES && find * -type f | xargs dirname | sort -u); do
     if [[ ! " ${PROJECTS[*]} " =~ " ${project} " ]]; then
@@ -81,7 +81,7 @@ done
 # This function uses the TARGET_PRODUCT, TARGET_RELEASE, and TARGET_BUILD_VARIANT environment variables if they are set.
 # Otherwise, it uses default values (sdk, sdk_finalization, and userdebug respectively).
 function m() {
-    "$top/build/soong/soong_ui.bash" --make-mode \
+    "$TOP/build/soong/soong_ui.bash" --make-mode \
         "TARGET_PRODUCT=${TARGET_PRODUCT:-sdk}" \
         "TARGET_RELEASE=${TARGET_RELEASE:-sdk_finalization}" \
         "TARGET_BUILD_VARIANT=${TARGET_BUILD_VARIANT:-userdebug}" \
@@ -105,12 +105,12 @@ function git() {
 # Will create the topic $BRANCH and add all modified files in a given project
 # before committing the changes.
 #
-# $1: project path relative to $top
+# $1: project path relative to $TOP
 # stdin: commit message
 function git_commit() {
     local project="$1"
 
-    pushd "$top/$project"
+    pushd "$TOP/$project"
     if [[ "$(git branch --show-current)" != "$BRANCH" ]]; then
         git checkout -b "$BRANCH" goog/main
     fi
@@ -128,7 +128,7 @@ function format_patches_into_patchdir() {
     mkdir -p $patch_dir
 
     for project in "${PROJECTS[@]}"; do
-        pushd "$top/$project"
+        pushd "$TOP/$project"
         if [[ "$(git branch --show-current)" == "$BRANCH" ]]; then
             mkdir -p "$patch_dir/$project"
             git format-patch -o "$patch_dir/$project" "$BRANCH" ^goog/main
@@ -139,13 +139,13 @@ function format_patches_into_patchdir() {
 
 # Create the topic $BRANCH and apply patches to a given project
 #
-# $1: project path relative to $top
+# $1: project path relative to $TOP
 # $2, ...: paths to patch files to apply
 function apply_patches() {
     local project="$1"
     shift
 
-    pushd "$top/$project"
+    pushd "$TOP/$project"
     if [[ "$(git branch --show-current)" != "$BRANCH" ]]; then
         if [[ $RUNNING_ON_BUILD_SERVER ]]; then
             git checkout -b "$BRANCH"
@@ -189,7 +189,7 @@ function setup_build_server() {
     fi
 
     for project in "${PROJECTS[@]}"; do
-        pushd "$top/$project"
+        pushd "$TOP/$project"
         rm .git # regular file when using git worktrees
         git init
         git add .
