@@ -14,11 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Set SDK extension versions
-for release_config in next trunk trunk_staging; do
-    set_build_flags $release_config RELEASE_PLATFORM_SDK_EXTENSION_VERSION=$SDK_EXT_VERSION
-done
-
 # Update SdkExtensions database
 m gen_sdk
 gen_sdk --database \
