@@ -153,5 +153,3 @@ function set_build_flags() {
 $release_config: update SDK related build flag(s)
 EOF
 }
-
-# vi: expandtab sw=4 ts=4

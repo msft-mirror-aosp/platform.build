@@ -89,5 +89,3 @@ case "$command" in
         exit 1
         ;;
 esac
-
-# vi: expandtab sw=4 ts=4

@@ -71,5 +71,3 @@ EOF
 apply_patches \
     prebuilts/sdk \
     $BUNDLED_PATCHES/prebuilts/sdk/0001-wear-temporarily-hard-code-wear-sdk-public-jar-sourc.patch
-
-# vi: expandtab sw=4 ts=4

@@ -28,5 +28,3 @@ BUG=480974361
 
 # The topic branch to perform the work on
 BRANCH="finalize-$MAJOR.$MINOR"
-
-# vi: expandtab sw=4 ts=4

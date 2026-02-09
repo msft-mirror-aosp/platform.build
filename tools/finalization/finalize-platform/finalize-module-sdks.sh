@@ -29,5 +29,3 @@ Finalize SDK extension $SDK_EXT_VERSION
 Import module SDK artifacts from ab/$BUILD_NUMBER.
 EOF
 done
-
-# vi: expandtab sw=4 ts=4
