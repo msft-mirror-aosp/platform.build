@@ -1,6 +1,6 @@
-From 2e5e1cce4ed4248e6069e6767bf9e5b30bd0ca6f Mon Sep 17 00:00:00 2001
+From cf3925b8458fc58d2f6da3820fc0826720a609b7 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?M=C3=A5rten=20Kongstad?= <amhk@google.com>
-Date: Thu, 29 Jan 2026 20:36:29 +0000
+Date: Mon, 9 Feb 2026 14:28:24 +0000
 Subject: [PATCH 2/2] Rename VersionCodes.C -> VersionCodes.CINNAMON_BUN
 
 Change-Id: Ia5e338bf15ad6812d95953b970200ef045f65d3d
@@ -16,11 +16,12 @@ Change-Id: Ia5e338bf15ad6812d95953b970200ef045f65d3d
  .../time/format/DateTimeFormatterTest.java    |  2 +-
  ojluni/src/main/java/java/lang/Runtime.java   |  2 +-
  ojluni/src/main/java/java/lang/Thread.java    |  4 +--
+ .../src/main/java/java/util/SequencedMap.java | 24 +++++++-------
  .../tck/java/time/chrono/TCKChronology.java   |  2 +-
  .../java/time/chrono/TestEraDisplayName.java  |  2 +-
  .../java/time/format/TestNonIsoFormatter.java |  2 +-
  .../time/format/TestUnicodeExtension.java     |  4 +--
- 15 files changed, 38 insertions(+), 38 deletions(-)
+ 16 files changed, 50 insertions(+), 50 deletions(-)
 
 diff --git a/harmony-tests/src/test/java/org/apache/harmony/tests/java/util/ScannerTest.java b/harmony-tests/src/test/java/org/apache/harmony/tests/java/util/ScannerTest.java
 index 0f383d9a5fb..6c62a0fa3a0 100644
@@ -353,6 +354,100 @@ index b544f93ade7..d62327f1a54 100644
                  && Compatibility.isChangeEnabled(Thread.OVERRIDDEN_THREAD_START_METHOD))) {
              synchronized (this) {
                  // Disable this check due to app compat http://b/455404369
+diff --git a/ojluni/src/main/java/java/util/SequencedMap.java b/ojluni/src/main/java/java/util/SequencedMap.java
+index 59716044cd6..5a96c605773 100644
+--- a/ojluni/src/main/java/java/util/SequencedMap.java
++++ b/ojluni/src/main/java/java/util/SequencedMap.java
+@@ -300,25 +300,25 @@ public interface SequencedMap<K, V> extends Map<K, V> {
+             public void addLast(K k) { throw new UnsupportedOperationException(); }
+             // BEGIN Android-changed: keep these methods SequencedSet-based if app targets pre C.
+             public K getFirst() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.getFirst();
+                 }
+                 return nsee(SequencedMap.this.firstEntry()).getKey();
+             }
+             public K getLast() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.getLast();
+                 }
+                 return nsee(SequencedMap.this.lastEntry()).getKey();
+             }
+             public K removeFirst() {
+-                if  (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if  (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.removeFirst();
+                 }
+                 return nsee(SequencedMap.this.pollFirstEntry()).getKey();
+             }
+             public K removeLast() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.removeLast();
+                 }
+                 return nsee(SequencedMap.this.pollLastEntry()).getKey();
+@@ -363,25 +363,25 @@ public interface SequencedMap<K, V> extends Map<K, V> {
+             // BEGIN Android-changed: keep these methods SequencedCollection-based if app targets
+             // pre C.
+             public V getFirst() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedCollection.super.getFirst();
+                 }
+                 return nsee(SequencedMap.this.firstEntry()).getValue();
+             }
+             public V getLast() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedCollection.super.getLast();
+                 }
+                 return nsee(SequencedMap.this.lastEntry()).getValue();
+             }
+             public V removeFirst() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedCollection.super.removeFirst();
+                 }
+                 return nsee(SequencedMap.this.pollFirstEntry()).getValue();
+             }
+             public V removeLast() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedCollection.super.removeLast();
+                 }
+                 return nsee(SequencedMap.this.pollLastEntry()).getValue();
+@@ -432,25 +432,25 @@ public interface SequencedMap<K, V> extends Map<K, V> {
+             public void addLast(Map.Entry<K, V> e) { throw new UnsupportedOperationException(); }
+             // BEGIN Android-changed: keep these methods SequencedSet-based if app targets pre C.
+             public Map.Entry<K, V> getFirst() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.getFirst();
+                 }
+                 return nsee(SequencedMap.this.firstEntry());
+             }
+             public Map.Entry<K, V> getLast() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.getLast();
+                 }
+                 return nsee(SequencedMap.this.lastEntry());
+             }
+             public Map.Entry<K, V> removeFirst() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.removeFirst();
+                 }
+                 return nsee(SequencedMap.this.pollFirstEntry());
+             }
+             public Map.Entry<K, V> removeLast() {
+-                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.C) {
++                if (VMRuntime.getRuntime().getTargetSdkVersion() < VersionCodes.CINNAMON_BUN) {
+                     return SequencedSet.super.removeLast();
+                 }
+                 return nsee(SequencedMap.this.pollLastEntry());
 diff --git a/ojluni/src/test/java/time/tck/java/time/chrono/TCKChronology.java b/ojluni/src/test/java/time/tck/java/time/chrono/TCKChronology.java
 index b914a15ed0b..8a4ea103df7 100644
 --- a/ojluni/src/test/java/time/tck/java/time/chrono/TCKChronology.java
@@ -415,5 +510,5 @@ index 3942e85416a..ec2741c280b 100644
      public void test_withLocale(Locale locale, Chronology chrono, ZoneId zone,
                                  Chronology chronoExpected, ZoneId zoneExpected,
 -- 
-2.53.0.rc1.225.gd81095ad13-goog
+2.53.0.rc2.204.g2597b5adb4-goog
 

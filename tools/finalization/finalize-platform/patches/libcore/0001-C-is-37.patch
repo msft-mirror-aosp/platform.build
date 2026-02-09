@@ -1,4 +1,4 @@
-From 8276f67484dd1bd16be76be0531dddbc2691bce5 Mon Sep 17 00:00:00 2001
+From a3f452b0538a068228b91d78e62570cbd77706d4 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?M=C3=A5rten=20Kongstad?= <amhk@google.com>
 Date: Thu, 29 Jan 2026 12:23:21 +0000
 Subject: [PATCH 1/2] C is 37
@@ -44,5 +44,5 @@ index 2a216605bf0..5d0ebf8c08d 100644
      field @libcore.api.IntraCoreApi public static final int O = 26; // 0x1a
      field @libcore.api.IntraCoreApi public static final int P = 28; // 0x1c
 -- 
-2.53.0.rc1.225.gd81095ad13-goog
+2.53.0.rc2.204.g2597b5adb4-goog
 
