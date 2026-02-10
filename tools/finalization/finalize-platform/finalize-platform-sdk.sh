@@ -63,6 +63,15 @@ $TOP/prebuilts/sdk/update_prebuilts/update_prebuilts.py \
     --bug $BUG \
     1234 # doesn't matter in local mode
 
+# update_prebuilts.py updates current/ but that directory should only hold
+# artifacts from sdk_with_runtime_apis builds; undo those changes before
+# committing
+pushd "$TOP"/prebuilts/sdk
+git checkout current
+git clean -fd current
+popd
+
+
 git_commit \
     prebuilts/sdk \
 <<EOF
