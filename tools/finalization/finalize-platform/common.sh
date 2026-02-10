@@ -65,6 +65,8 @@ PROJECTS+=(packages/modules/SdkExtensions)
 PROJECTS+=(packages/modules/common)
 PROJECTS+=(platform_testing)
 PROJECTS+=(prebuilts/sdk)
+PROJECTS+=(prebuilts/abi-dumps/ndk)
+PROJECTS+=(prebuilts/abi-dumps/platform)
 PROJECTS+=(tools/platform-compat)
 PROJECTS+=(vendor/google/release)
 PROJECTS+=(vendor/google_shared/build/release)
@@ -199,6 +201,33 @@ function setup_build_server() {
     done
 }
 
+# Function to get the project directory based on the release config.
+#
+# $1: the release config
+# @return {int} 0 on success, 1 on error.
+function get_project_for_release() {
+    local release_config="$1"
+    local project=""
+
+    case "$release_config" in
+        "next" | "trunk")
+            project="vendor/google_shared/build/release"
+            ;;
+        "trunk_staging")
+            project="build/release"
+            ;;
+        "sdk_finalization")
+            project="vendor/google/release"
+            ;;
+        *)
+            echo "Error: Unexpected release config '$release_config'" >&2
+            exit 1
+            ;;
+    esac
+    echo "$project"
+    return 0
+}
+
 # Set build flags for the given release config.
 #
 # $1: the release config
@@ -207,24 +236,10 @@ function set_build_flags() {
     local release_config="$1"
     shift
 
-    case "$release_config" in
-        "next" | "trunk")
-            local project="vendor/google_shared/build/release"
-            ;;
-        "trunk_staging")
-            local project="build/release"
-            ;;
-        "sdk_finalization")
-            local project="vendor/google/release"
-            ;;
-        *)
-            error "unexpected release config $release_config"
-            exit 1
-    esac
+    local project=$(get_project_for_release "$release_config")
 
     build-flag --quiet --release=$release_config set --dir $project $@
-    git_commit $project \
-<<EOF
+    git_commit $project <<EOF
 $release_config: update SDK related build flag(s)
 EOF
 }
