@@ -75,4 +75,7 @@ EOF
 # hotfix to fix broken build
 apply_patches \
     prebuilts/sdk \
-    $BUNDLED_PATCHES/prebuilts/sdk/0001-wear-temporarily-hard-code-wear-sdk-public-jar-sourc.patch
+    "$BUNDLED_PATCHES"/prebuilts/sdk/0001-wear-temporarily-hard-code-wear-sdk-public-jar-sourc.patch
+apply_patches \
+    packages/apps/Settings \
+    "$BUNDLED_PATCHES"/packages/apps/Settings/0001-Fix-compilation-error-after-37.0-finalization.patch
