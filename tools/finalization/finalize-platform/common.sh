@@ -36,6 +36,7 @@ function error() {
 
 # Calculate the top of the android source tree
 TOP="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
+export ANDROID_BUILD_TOP="$TOP"
 
 # Directory that holds the static patches that are included in this script (in
 # contrast to the user supplied --patch-dir directory that is used to
@@ -51,6 +52,12 @@ RUNNING_ON_BUILD_SERVER=${BUILD_NUMBER:=}
 
 # The current build ID (set if running on a build server)
 BUILD_NUMBER=${BUILD_NUMBER:=local-build}
+
+# Ensure that TARGET_PRODUCT, TARGET_RELEASE, and TARGET_BUILD_VARIANT are set.
+# Sets them to default values if they are not set (sdk, sdk_finalization, and userdebug respectively).
+export TARGET_PRODUCT=${TARGET_PRODUCT:-sdk}
+export TARGET_RELEASE=${TARGET_RELEASE:-sdk_finalization}
+export TARGET_BUILD_VARIANT=${TARGET_BUILD_VARIANT:-userdebug}
 
 # Paths to all projects that this tool (potentially) modifies
 declare -a PROJECTS
@@ -80,13 +87,11 @@ for project in $(cd $BUNDLED_PATCHES && find * -type f | xargs dirname | sort -u
 done
 
 # Define the m function to run the build.
-# This function uses the TARGET_PRODUCT, TARGET_RELEASE, and TARGET_BUILD_VARIANT environment variables if they are set.
-# Otherwise, it uses default values (sdk, sdk_finalization, and userdebug respectively).
 function m() {
     "$TOP/build/soong/soong_ui.bash" --make-mode \
-        "TARGET_PRODUCT=${TARGET_PRODUCT:-sdk}" \
-        "TARGET_RELEASE=${TARGET_RELEASE:-sdk_finalization}" \
-        "TARGET_BUILD_VARIANT=${TARGET_BUILD_VARIANT:-userdebug}" \
+        "TARGET_PRODUCT=$TARGET_PRODUCT" \
+        "TARGET_RELEASE=$TARGET_RELEASE" \
+        "TARGET_BUILD_VARIANT=$TARGET_BUILD_VARIANT" \
         "$@"
 }
 
