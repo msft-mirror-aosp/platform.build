@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO: remove this when it is no longer needed (when wear has fixed their setup or landed 37)
+apply_patches \
+    prebuilts/sdk \
+    "$BUNDLED_PATCHES"/prebuilts/sdk/0001-wear-temporarily-hard-code-wear-sdk-public-jar-sourc.patch
+
 set_build_flags $TARGET_RELEASE \
     RELEASE_PLATFORM_SDK_VERSION=$MAJOR \
     RELEASE_PLATFORM_SDK_VERSION_FULL=$MAJOR.$MINOR
