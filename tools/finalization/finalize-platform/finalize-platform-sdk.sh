@@ -66,7 +66,10 @@ $TOP/prebuilts/sdk/update_prebuilts/update_prebuilts.py \
 # update_prebuilts.py updates current/ but that directory should only hold
 # artifacts from sdk_with_runtime_apis builds; undo those changes before
 # committing
+#
+# Also remove the unwanted SDK zip file that --local_mode copies
 pushd "$TOP"/prebuilts/sdk
+rm android-sdk*.zip
 git checkout current
 git clean -fd current
 popd
