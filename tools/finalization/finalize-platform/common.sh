@@ -198,6 +198,19 @@ function setup_build_server() {
         exit 1
     fi
 
+    echo "== Build server debug info start =="
+
+    # Temporary debug info
+    find --version
+
+    echo "These are the files passed in from previous builds:"
+    find $TOP/out/prebuilt_cached -type f
+
+    # Might as well dump this
+    env
+
+    echo "== Build server debug info end =="
+
     for project in "${PROJECTS[@]}"; do
         pushd "$TOP/$project"
         rm .git # regular file when using git worktrees
