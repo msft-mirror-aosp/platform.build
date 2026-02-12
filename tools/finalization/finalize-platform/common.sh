@@ -177,10 +177,13 @@ function apply_patches() {
 # $1: path to directory of patches
 function apply_patches_from_patchdir() {
     local patch_dir="$1"
-    for project in $(find $patch_dir -type f -printf "%P\n" | xargs dirname | sort -u); do
+    for absolute_project_path in $(find $patch_dir -type f | xargs dirname | sort -u); do
+        relative_project_path="${absolute_project_path#$patch_dir/}"
+        # Hack to remove stray patches/ folder. NOOP if there isn't one
+        project="${relative_project_path#patches/}"
         apply_patches \
             "$project" \
-            $(ls $patch_dir/$project/*.patch | sort)
+            $(find "$absolute_project_path" -name "*.patch" | sort)
     done
 }
 
