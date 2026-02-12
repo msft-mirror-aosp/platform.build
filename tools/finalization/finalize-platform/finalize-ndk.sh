@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO: Use sdk_finalization ?
+TARGET_RELEASE=trunk_staging
+
 # TODO: remove this when it is no longer needed (when wear has fixed their setup or landed 37)
 apply_patches \
     prebuilts/sdk \
