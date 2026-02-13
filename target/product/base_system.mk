@@ -159,11 +159,8 @@ PRODUCT_PACKAGES += \
     libbinder \
     libbinder_ndk \
     libbinder_rpc_unstable \
-    libc.bootstrap \
     libcamera2ndk \
     libcutils \
-    libdl.bootstrap \
-    libdl_android.bootstrap \
     libdrmframework \
     libdrmframework_jni \
     libEGL \
@@ -185,7 +182,6 @@ PRODUCT_PACKAGES += \
     libjnigraphics \
     libjpeg \
     liblog \
-    libm.bootstrap \
     libmedia \
     libmedia_jni \
     libmediandk \
@@ -221,7 +217,6 @@ PRODUCT_PACKAGES += \
     libvintf_jni \
     libvulkan \
     libwilhelm \
-    linker \
     llkd \
     llndk_libs \
     lmkd \
@@ -441,8 +436,28 @@ PRODUCT_PACKAGES += \
 PRODUCT_SYSTEM_PROPERTIES += hwservicemanager.always_sets_disabled=true
 
 PRODUCT_PACKAGES_ARM64 := libclang_rt.hwasan \
- libclang_rt.hwasan.bootstrap \
  libc_hwasan \
+
+# Bionic
+ifeq ($(RELEASE_DEPRECATE_RUNTIME_APEX),true)
+PRODUCT_PACKAGES += \
+    libc \
+    libdl \
+    libm \
+    libdl_android \
+    linker \
+    linkerconfig \
+    crash_dump
+else
+PRODUCT_PACKAGES += \
+    libc.bootstrap \
+    libdl.bootstrap \
+    libm.bootstrap \
+    libdl_android.bootstrap \
+    linker
+PRODUCT_PACKAGES_ARM64 += \
+    libclang_rt.hwasan.bootstrap
+endif # RELEASE_DEPRECATE_RUNTIME_APEX
 
 # Jacoco agent JARS to be built and installed, if any.
 ifeq ($(EMMA_INSTRUMENT),true)

@@ -258,6 +258,9 @@ else
 
 endif
 
+# Add RELEASE_DEPRECATE_RUNTIME_APEX to soong
+$(call soong_config_set_bool,ANDROID,release_deprecate_runtime_apex,$(RELEASE_DEPRECATE_RUNTIME_APEX))
+
 # Add uprobestats build flags to soong
 $(call soong_config_set,ANDROID,release_uprobestats_bridge_service,$(RELEASE_UPROBESTATS_BRIDGE_SERVICE))
 $(call soong_config_set,bootclasspath,release_uprobestats_bridge_service,$(RELEASE_UPROBESTATS_BRIDGE_SERVICE))
