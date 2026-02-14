@@ -413,7 +413,7 @@ pub fn list_flags_with_info(
         let (package_name, boolean_start_index) = package_info[node.package_id as usize];
         let flag_index = boolean_start_index + node.flag_index as u32;
         let flag_value = flag_value_list.booleans[flag_index as usize];
-        let flag_attribute = flag_info.nodes[flag_index as usize].attributes;
+        let flag_attribute = flag_info.boolean_nodes[flag_index as usize].attributes;
         flags.push(FlagValueAndInfoSummary {
             package_name: String::from(package_name),
             flag_name: node.flag_name.clone(),
