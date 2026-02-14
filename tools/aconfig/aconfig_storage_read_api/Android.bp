@@ -34,11 +34,6 @@ rust_library {
         "//apex_available:anyapex",
     ],
     min_sdk_version: "29",
-    target: {
-        windows: {
-            enabled: true,
-        },
-    },
 }
 
 rust_library {
@@ -103,11 +98,6 @@ rust_ffi_static {
         "//apex_available:anyapex",
     ],
     min_sdk_version: "29",
-    target: {
-        windows: {
-            enabled: true,
-        },
-    },
 }
 
 // flag read api cc interface
@@ -135,10 +125,6 @@ cc_library {
     target: {
         linux: {
             version_script: "libaconfig_storage_read_api_cc.map",
-        },
-        windows: {
-            enabled: true,
-            ldflags: ["-Wl,--allow-multiple-definition"],
         },
     },
     double_loadable: true,

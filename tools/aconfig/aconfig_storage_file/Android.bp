@@ -35,11 +35,6 @@ rust_library {
     min_sdk_version: "29",
     vendor_available: true,
     product_available: true,
-    target: {
-        windows: {
-            enabled: true,
-        },
-    },
 }
 
 rust_library {
@@ -89,11 +84,6 @@ rust_protobuf {
     min_sdk_version: "29",
     vendor_available: true,
     product_available: true,
-    target: {
-        windows: {
-            enabled: true,
-        },
-    },
 }
 
 cc_library {
