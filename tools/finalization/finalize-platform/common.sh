@@ -64,6 +64,7 @@ declare -a PROJECTS
 PROJECTS+=(build/release)
 PROJECTS+=(build/soong)
 PROJECTS+=(cts)
+PROJECTS+=(development)
 PROJECTS+=(frameworks/base)
 PROJECTS+=(frameworks/libs/modules-utils)
 PROJECTS+=(libcore)
