@@ -19,6 +19,12 @@ if test -e "$TOP/prebuilts/sdk/extensions/$SDK_EXT_VERSION"; then
     return
 fi
 
+# The module SDKs do not exist already; build them
+if [[ -z "$mainline_sdks_dir" ]]; then
+    TARGET_RELEASE=sdk_finalization TARGET_BUILD_VARIANT=userdebug UNBUNDLED_BUILD_SDKS_FROM_SOURCE=true vendor/google/build/mainline_modules_sdks.sh --build-release next
+    mainline_sdks_dir="$DEST_DIR"
+fi
+
 m unpack-module-sdks
 projects="$(unpack-module-sdks \
     --mainline-sdks-top "$mainline_sdks_dir" \
