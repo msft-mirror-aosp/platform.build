@@ -106,8 +106,3 @@ for release_config in trunk trunk_staging; do
         RELEASE_PLATFORM_BASE_SDK_EXTENSION_VERSION=$SDK_EXT_VERSION \
         RELEASE_PLATFORM_VERSION_LAST_STABLE=$MARKETING_VERSION
 done
-
-# Apply hotfixes to anything that broke after setting the above build flags
-set_build_flags sdk_finalization \
-    RELEASE_PLATFORM_SDK_VERSION=$MAJOR \
-    RELEASE_PLATFORM_SDK_VERSION_FULL=$MAJOR.$MINOR
