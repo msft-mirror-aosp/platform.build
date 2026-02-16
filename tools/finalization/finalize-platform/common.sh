@@ -38,6 +38,9 @@ function error() {
 TOP="${ANDROID_BUILD_TOP:-$(dirname "${BASH_SOURCE[0]}")/../../../../..}"
 export ANDROID_BUILD_TOP="$TOP"
 
+# The build server sets DIST_DIR, use a sane default for local builds
+export DIST_DIR=${DIST_DIR:-$TOP/out/dist}
+
 # Directory that holds the static patches that are included in this script (in
 # contrast to the user supplied --patch-dir directory that is used to
 # dynamically create or apply patches)
