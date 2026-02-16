@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if test -e "$TOP/prebuilts/abi-dumps/ndk/$MAJOR"; then
+    info "finalize-ndk: already done, exit early"
+    return
+fi
+
 # TODO: Use sdk_finalization ?
 TARGET_RELEASE=trunk_staging
 

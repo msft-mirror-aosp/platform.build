@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [[ "$(build-flag --quiet --release=next get RELEASE_PLATFORM_SDK_VERSION_FULL)" == "$MAJOR.$MINOR" ]]; then
+    info "finalize-release-configs: already done, exit early"
+    return
+fi
+
 # Update SdkExtensions database
 m gen_sdk
 gen_sdk --database \

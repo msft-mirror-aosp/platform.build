@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if grep -q '<public type="attr" name="zygotePreloadNativeLib"' "$TOP/frameworks/base/core/res/res/values/public-final.xml"; then
+    info "finalize-resources: already done, exit early"
+    return
+fi
+
 m finalize_res
 finalize_res \
     "$TOP/frameworks/base/core/res/res/values/public-staging.xml" \

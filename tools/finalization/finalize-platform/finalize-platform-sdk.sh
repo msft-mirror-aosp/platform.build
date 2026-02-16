@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [[ "$(readlink $TOP/prebuilts/sdk/latest)" == "$MAJOR" ]]; then
+    info "finalize-platform-sdk: already done, exit early"
+    return
+fi
+
 # introduce new SDK extension
 apply_patches \
     packages/modules/SdkExtensions \

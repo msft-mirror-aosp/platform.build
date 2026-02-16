@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if test -e "$TOP/prebuilts/sdk/extensions/$SDK_EXT_VERSION"; then
+    info "finalize-module-sdks: already done, exit early"
+    return
+fi
+
 m unpack-module-sdks
 projects="$(unpack-module-sdks \
     --mainline-sdks-top "$mainline_sdks_dir" \
