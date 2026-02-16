@@ -51,7 +51,7 @@ m sdk sdk_repo dist
 # doesn't work)
 m unpack-platform-sdk
 unpack-platform-sdk \
-    --dist-dir "$TOP"/out/dist \
+    --dist-dir "$DIST_DIR" \
     --android-top "$TOP" \
     --version "$MAJOR"
 git_commit \
