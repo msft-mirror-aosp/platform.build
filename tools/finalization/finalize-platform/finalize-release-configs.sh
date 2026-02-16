@@ -30,6 +30,9 @@ git_commit \
 <<EOF
 Add new SDK extension version $SDK_EXT_VERSION
 
+Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 
 # Set SDK ZIP properties
@@ -65,6 +68,7 @@ Set SDK zip properties for Android $MAJOR.$MINOR
 
 Bug: $BUG
 Test: presubmit
+Flag: NONE platform SDK finalization
 EOF
 
 # Update hardcoded codename constants, API level mappings, etc
@@ -93,6 +97,9 @@ git_commit \
 <<EOF
 next: do not set PROSPECTIVE_SDK_VERSION_FULL
 
+Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 
 set_build_flags next \

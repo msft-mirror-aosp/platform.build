@@ -66,6 +66,9 @@ Finalize platform SDK for Android $MAJOR.$MINOR
 
 Files imported from ab/$BUILD_NUMBER.
 
+Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 
 # hotfix to fix broken build

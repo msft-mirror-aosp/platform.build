@@ -13,6 +13,7 @@ available.
 Bug: 397646538
 Bug: 480974361
 Test: atest sdk-extensions-info-test
+Flag: NONE platform SDK finalization
 Change-Id: I9fdb81ee679dc6f685f80eddfbd0fb7841fa210d
 ---
  sdk-extensions-info.xml | 171 ++++++++++++++++++++--------------------

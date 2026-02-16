@@ -273,5 +273,9 @@ function set_build_flags() {
     build-flag --quiet --release=$release_config set --dir $project $@
     git_commit $project <<EOF
 $release_config: update SDK related build flag(s)
+
+Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 }

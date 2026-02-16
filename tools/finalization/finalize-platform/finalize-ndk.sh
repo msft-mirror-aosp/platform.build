@@ -38,8 +38,9 @@ Record the NDK APIs for $MAJOR
 Generated with development/tools/ndk/update_ndk_abi.sh with
 RELEASE_PLATFORM_SDK_VERSION set to $MAJOR for $TARGET_RELEASE
 
-Test: N/A
 Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 
 m create_reference_dumps
@@ -56,8 +57,9 @@ create_reference_dumps \\
     --build-variant $TARGET_BUILD_VARIANT \\
     --lib-variant APEX
 
-Test: N/A
 Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 
 project=$(get_project_for_release $TARGET_RELEASE)
