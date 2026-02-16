@@ -63,7 +63,6 @@ done
 
 case "$command" in
     finalize-module-sdks)
-        require_arg "--mainline-sdks-dir" "mainline_sdks_dir"
         source "$(dirname "$0")"/finalize-module-sdks.sh
         ;;
     finalize-resources)
