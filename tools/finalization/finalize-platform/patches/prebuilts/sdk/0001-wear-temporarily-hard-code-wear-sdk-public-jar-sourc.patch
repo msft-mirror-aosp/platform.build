@@ -16,6 +16,9 @@ wear-sdk-public-jar srcs attribute to point to the 36.1 version. Long
 term we need a better solution that allows the platform to finalize
 before Wear does.
 
+Bug: 480974361
+Test: N/A
+Flag: NONE platform SDK finalization
 Change-Id: I098d17ea5fe517ed42bd1ec4717cca68deaf10f8
 ---
  opt/wear/Android.bp | 9 +--------

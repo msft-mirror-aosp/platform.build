@@ -7,6 +7,7 @@ Note: no new modules opted in to SDK extensions as part of C.
 
 Bug: 480974361
 Test: atest derive_sdk_test
+Flag: NONE platform SDK finalization
 Change-Id: Ia9977353e59eaede613792b3bfb7040d5f6b5e14
 ---
  derive_sdk/derive_sdk.cpp      | 11 ++++++++++-

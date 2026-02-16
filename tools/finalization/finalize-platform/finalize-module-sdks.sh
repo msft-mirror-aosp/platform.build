@@ -38,5 +38,9 @@ for project in $projects; do
 Finalize SDK extension $SDK_EXT_VERSION
 
 Import module SDK artifacts from ab/$BUILD_NUMBER.
+
+Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 done
