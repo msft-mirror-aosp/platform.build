@@ -43,22 +43,18 @@ for release_config in next trunk trunk_staging; do
 done
 
 # build the SDK
-set_build_flags next RELEASE_PLATFORM_PROSPECTIVE_SDK_VERSION_FULL=37.0
+set_build_flags next RELEASE_PLATFORM_PROSPECTIVE_SDK_VERSION_FULL=$MAJOR.$MINOR
 m sdk sdk_repo dist
 
 # populate prebuilts/sdk
 #
-# Will update these files under prebuilts/sdk/$MAJOR, and prebuilts/sdk/{Android.bp,latest}
-#
-# -f $MAJOR instead of $major.$minor to force update_prebuilts.py to
-# update the 37 directory instead of creating a new 37.0 directory
-# (TODO: debug why renaming the existing directory to 37.0 first
-# doesn't work)
+# Will update these files under prebuilts/sdk/$MAJOR.$MINOR, and
+# prebuilts/sdk/{Android.bp,latest}
 m unpack-platform-sdk
 unpack-platform-sdk \
     --dist-dir "$DIST_DIR" \
     --android-top "$TOP" \
-    --version "$MAJOR"
+    --version "$MAJOR.$MINOR"
 git_commit \
     prebuilts/sdk \
 <<EOF
