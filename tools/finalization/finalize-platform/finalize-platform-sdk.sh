@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [[ "$(readlink $TOP/prebuilts/sdk/latest)" == "$MAJOR" ]]; then
+    info "finalize-platform-sdk: already done, exit early"
+    return
+fi
+
 # introduce new SDK extension
 apply_patches \
     packages/modules/SdkExtensions \
@@ -51,7 +56,7 @@ m sdk sdk_repo dist
 # doesn't work)
 m unpack-platform-sdk
 unpack-platform-sdk \
-    --dist-dir "$TOP"/out/dist \
+    --dist-dir "$DIST_DIR" \
     --android-top "$TOP" \
     --version "$MAJOR"
 git_commit \
@@ -61,6 +66,9 @@ Finalize platform SDK for Android $MAJOR.$MINOR
 
 Files imported from ab/$BUILD_NUMBER.
 
+Bug: $BUG
+Test: N/A
+Flag: NONE platform SDK finalization
 EOF
 
 # hotfix to fix broken build
