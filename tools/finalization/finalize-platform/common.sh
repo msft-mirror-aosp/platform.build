@@ -130,6 +130,36 @@ function git_commit() {
     popd
 }
 
+# Fetch patches from a completed job on the build server
+#
+# $1: path to directory in which to store the patch files
+# $2: build target on the build server, e.g. finalize-ndk
+# $3: (optional) build server job ID; if not provided defaults to the latest
+#     known good build
+function download_patches_to_patchdir() {
+    local patch_dir="$1"
+    local build_server_target="$2"
+    local build_server_id="$3"
+
+    if [[ -z "$build_server_id" ]]; then
+        build_server_id="$(/google/bin/releases/android/ab/ab.par \
+            green_cl \
+            --branch git_main-sdk_finalization-release \
+            --target $build_server_target \
+            --custom_raw_format='{o[buildId]}')"
+    fi
+
+    mkdir -p $patch_dir
+    pushd "$patch_dir"
+    /google/bin/releases/android/fetch_artifact/fetch_artifact.par \
+        --parallelism 8 \
+        --preserve_directory_structure \
+        --bid $build_server_id \
+        --target $build_server_target \
+        'patches/**/*'
+    popd
+}
+
 # Traverse the Android tree and create patch files for all commits on the topic
 # $BRANCH.
 #
