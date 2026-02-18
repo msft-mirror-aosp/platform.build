@@ -406,8 +406,7 @@ endif
 
 ifeq ($(RELEASE_WEBAPP_MODULE),true)
     PRODUCT_PACKAGES += \
-       com.android.webapp \
-       default-permissions-webapp.xml
+       com.android.webapp
 endif
 
 ifneq ($(RELEASE_MEDIAMETRICS_MODULE),true)
