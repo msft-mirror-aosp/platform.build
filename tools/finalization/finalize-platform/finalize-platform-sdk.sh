@@ -43,8 +43,9 @@ for release_config in next trunk trunk_staging; do
 done
 
 # build the SDK
-set_build_flags next RELEASE_PLATFORM_PROSPECTIVE_SDK_VERSION_FULL=$MAJOR.$MINOR
+set_prospective_sdk_version_full "$MAJOR.$MINOR"
 m sdk sdk_repo dist
+clear_prospective_sdk_version_full
 
 # populate prebuilts/sdk
 #
