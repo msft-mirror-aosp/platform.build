@@ -183,6 +183,9 @@ def is_soong_prebuilt_module(file_metadata):
   if base_type and base_type in SOONG_PREBUILT_MODULE_TYPES:
     return True
 
+  if file_metadata.get('cipd_src'):
+    return True
+
   return False
 
 
@@ -274,7 +277,7 @@ def get_metadata_file_path(file_metadata):
   return metadata_path
 
 
-def get_package_version(metadata_file_path, is_src_package, module_name=None):
+def get_package_version(metadata_file_path, is_src_package, cipd_src=None):
   """Return a package's version."""
   if is_src_package:
     # Version is from METADATA file for source packages
@@ -291,8 +294,8 @@ def get_package_version(metadata_file_path, is_src_package, module_name=None):
       return metadata_proto.third_party.identifier[0].version
   else:  # prebuilt packages
     # Version is from cipd_package or METADATA file for prebuilt packages
-    if module_name:
-      cipd_version = db.get_cipd_package_version(module_name)
+    if cipd_src:
+      cipd_version = db.get_cipd_package_version(cipd_src)
       if cipd_version:
         return cipd_version
 
@@ -396,7 +399,7 @@ def get_sbom_fragments(installed_file_metadata, metadata_file_path):
 
   elif is_prebuilt_package(installed_file_metadata):
     # Prebuilt fork packages
-    version = get_package_version(metadata_file_path, False, installed_file_metadata.get('name', None))
+    version = get_package_version(metadata_file_path, False, installed_file_metadata.get('cipd_src', None))
     name = get_prebuilt_package_name(installed_file_metadata, metadata_file_path)
     prebuilt_package_id = new_package_id(name, PKG_PREBUILT)
     prebuilt_package = sbom_data.Package(id=prebuilt_package_id,
