@@ -198,7 +198,7 @@ function apply_patches() {
     if [[ ! $RUNNING_ON_BUILD_SERVER ]]; then
         # the CLs were presumably downloaded from the build server; claim
         # ownership of them to be able to upload them to gerrit
-        git commit --amend --reset-author -C HEAD
+        git rebase --exec 'git commit --amend --reset-author -C HEAD' goog/main
     fi
     popd
 }
