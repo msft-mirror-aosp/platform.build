@@ -75,3 +75,6 @@ apply_patches \
 apply_patches \
     packages/modules/Permission \
     "$BUNDLED_PATCHES"/packages/modules/Permission/0001-Fix-compilation-error-after-37.0-finalization.patch
+apply_patches \
+    cts \
+    "$BUNDLED_PATCHES"/cts/0001-Fix-compilation-error-after-37.0-finalization.patch

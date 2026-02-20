@@ -1,0 +1,50 @@
+From 5dcef07d127783ba29854627aba54b5206bac60e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?M=C3=A5rten=20Kongstad?= <amhk@google.com>
+Date: Fri, 20 Feb 2026 09:36:59 +0000
+Subject: [PATCH] Fix compilation error after 37.0 finalization
+
+Fix the following errors:
+
+  ERROR: [...]/PinnedWindowingLayerActivity.kt:201:58 \
+         Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'ActivityManager.RecentTaskInfo?'
+  ERROR: [...]/TaskMoveTestActivity.kt:152:30 \
+         Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'ActivityManager.RecentTaskInfo?'
+
+Bug: 480974361
+Test: m out/soong/.intermediates/cts/tests/framework/base/windowmanager/test-apps/app/CtsDeviceServicesTestApp/android_common/kotlin/CtsDeviceServicesTestApp.jar
+Flag: NONE platform SDK finalization
+Change-Id: I7b4e6e2d9251c14a8336a0b8fd0d344d52868337
+---
+ .../src/android/server/wm/app/PinnedWindowingLayerActivity.kt   | 2 +-
+ .../app/src/android/server/wm/app/TaskMoveTestActivity.kt       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/PinnedWindowingLayerActivity.kt b/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/PinnedWindowingLayerActivity.kt
+index e62aa115da1..75069f59e9b 100644
+--- a/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/PinnedWindowingLayerActivity.kt
++++ b/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/PinnedWindowingLayerActivity.kt
+@@ -198,7 +198,7 @@ class PinnedWindowingLayerActivity : Activity() {
+     private fun getAppTask(): AppTask {
+         val activityManager: ActivityManager = getSystemService(ActivityManager::class.java)
+         val appTasks = activityManager.getAppTasks()
+-        return checkNotNull(appTasks.filter { it.taskInfo.taskId == taskId }.firstOrNull()) {
++        return checkNotNull(appTasks.filter { it.taskInfo!!.taskId == taskId }.firstOrNull()) {
+             "AppTask with taskId $taskId not found."
+         }
+     }
+diff --git a/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/TaskMoveTestActivity.kt b/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/TaskMoveTestActivity.kt
+index 015f3106d4f..d4351e74f3a 100644
+--- a/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/TaskMoveTestActivity.kt
++++ b/tests/framework/base/windowmanager/test-apps/app/src/android/server/wm/app/TaskMoveTestActivity.kt
+@@ -149,7 +149,7 @@ class TaskMoveTestActivity : Activity() {
+         val activityManager = getSystemService(ActivityManager::class.java)
+         val appTasks = activityManager.appTasks
+         for (task in appTasks) {
+-            if (task.taskInfo.taskId == taskId) {
++            if (task.taskInfo!!.taskId == taskId) {
+                 return task
+             }
+         }
+-- 
+2.53.0.345.g96ddfc5eaa-goog
+
