@@ -72,3 +72,6 @@ EOF
 apply_patches \
     packages/apps/Settings \
     "$BUNDLED_PATCHES"/packages/apps/Settings/0001-Fix-compilation-error-after-37.0-finalization.patch
+apply_patches \
+    packages/modules/Permission \
+    "$BUNDLED_PATCHES"/packages/modules/Permission/0001-Fix-compilation-error-after-37.0-finalization.patch
