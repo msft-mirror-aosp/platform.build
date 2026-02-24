@@ -230,7 +230,7 @@ class MetadataDb:
     return None
 
   def get_cipd_package_version(self, cipd_src):
-    cursor = self.conn.execute('select m.cipd_version from modules m join module_built_file mbf on m.id=mbf.module_id and mbf.built_file = ?',
+    cursor = self.conn.execute("select m.cipd_version from modules m join module_built_file mbf on m.module_type = 'cipd_package' and m.id=mbf.module_id and mbf.built_file = ?",
                                (cipd_src,))
     rows = cursor.fetchall()
     cursor.close()
