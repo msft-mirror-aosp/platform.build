@@ -1871,10 +1871,8 @@ $(SOONG_OUT_DIR)/compliance-metadata/$(TARGET_PRODUCT)/installed_files.stamp: $(
 # ==============================================================================
 # Soong API Integration (Analysis-Time)
 # ==============================================================================
-_MAKE_METADATA_JSON := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/make-module-metadata-analysis.json
-_FINAL_COMBINED_ZIP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api.zip
-_PURE_SOONG_ZIP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api_pure.zip
-_MERGE_STAMP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api_merged.stamp
+_MAKE_METADATA_JSON := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/make-modules.json
+_SOONG_API_ZIP := $(SOONG_OUT_DIR)/soong_api/$(TARGET_PRODUCT)/soong_api.zip
 
 define add-make-module-to-json
   $(call add_json_map_anon) \
@@ -1906,28 +1904,17 @@ _make_metadata_json := \
 # Merge and update soong_api.zip IN-PLACE
 _make_metadata_soong_integration := \
   $(shell \
-    if [ ! -f "$(_FINAL_COMBINED_ZIP)" ]; then \
-      echo "[SNAPI] ERROR: Final Soong Zip not found at $(_FINAL_COMBINED_ZIP)"; \
+    if [ ! -f "$(_SOONG_API_ZIP)" ]; then \
+      echo "[SNAPI] ERROR: Soong API Zip not found at $(_SOONG_API_ZIP)"; \
       exit 1; \
     fi; \
     \
-    if [ ! -f "$(_MERGE_STAMP)" ] || [ "$(_FINAL_COMBINED_ZIP)" -nt "$(_MERGE_STAMP)" ]; then \
-      cp -f "$(_FINAL_COMBINED_ZIP)" "$(_PURE_SOONG_ZIP)"; \
-    fi; \
-    \
-    if [ ! -f "$(_PURE_SOONG_ZIP)" ]; then \
-      echo "[SNAPI] ERROR: Pure soong zip backup missing!"; \
+    if [ ! -f "$(_MAKE_METADATA_JSON)" ]; then \
+      echo "[SNAPI] ERROR: Make metadata JSON not found at $(_MAKE_METADATA_JSON)"; \
       exit 1; \
     fi; \
     \
-    td=$$(mktemp -d) && \
-    unzip -qj -p "$(_PURE_SOONG_ZIP)" soong_api.json > $$td/soong_api.json && \
-    truncate -s -1 $$td/soong_api.json && \
-    echo -n "," >> $$td/soong_api.json && \
-    tail -c +2 $(_MAKE_METADATA_JSON) >> $$td/soong_api.json && \
-    zip -qj "$(_FINAL_COMBINED_ZIP)" $$td/soong_api.json && \
-    touch "$(_MERGE_STAMP)" && \
-    rm -rf $$td \
+    zip -qj "$(_SOONG_API_ZIP)" "$(_MAKE_METADATA_JSON)" \
   )
 
 ifneq ($(.SHELLSTATUS),0)
