@@ -147,6 +147,8 @@ java_aconfig_library {
 java_aconfig_library {
     name: "aconfig_test_java_library",
     aconfig_declarations: "aconfig.test.flags",
+    // The tests explicitly reference the internal FeatureFlags-related types.
+    preserve_legacy_impl_interface: true,
 }
 
 java_aconfig_library {
