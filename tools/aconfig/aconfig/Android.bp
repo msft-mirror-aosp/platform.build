@@ -185,6 +185,8 @@ java_aconfig_library {
     aconfig_declarations: "aconfig.test.flags",
     host_supported: true,
     mode: "test",
+    // The tests explicitly reference the internal FeatureFlags-related types.
+    preserve_legacy_impl_interface: true,
 }
 
 java_test_host {
