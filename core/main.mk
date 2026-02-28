@@ -677,7 +677,7 @@ endef
 # Scan all modules in general-tests, device-tests and other selected suites and
 # flatten the shared library dependencies.
 define update-host-shared-libs-deps-for-suites
-$(foreach suite,general-tests device-tests vts tvts art-host-tests host-unit-tests camera-hal-tests,\
+$(foreach suite,general-tests device-tests vts tvts sdvts art-host-tests host-unit-tests camera-hal-tests,\
   $(eval COMPATIBILITY.$(suite).SYMLINKS :=)\
   $(eval COMPATIBILITY.$(suite).HOST_SHARED_LIBRARY.FILES :=)\
   $(foreach m,$(COMPATIBILITY.$(suite).MODULES),\
