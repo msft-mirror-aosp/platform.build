@@ -411,6 +411,11 @@ android_filesystem_defaults {
             "appfunctions.extension.xml",
         ],
         default: [],
+    }) + select(release_flag("RELEASE_DISABLE_WIFICOND"), {
+        true: [],
+        default: [
+            "wificond",
+        ],
     }),
 }
 
@@ -714,7 +719,6 @@ system_image_defaults {
         "vr", // handheld_system
         "watchdogd", // base_system
         "wifi.rc", // base_system
-        "wificond", // base_system
         "wm", // base_system
     ] + select(release_flag("RELEASE_NATIVE_OMAPI"), {
         true: [
@@ -915,6 +919,7 @@ system_image_defaults {
                 "system_compatibility_matrix.xml", //base_system
                 "telephony-common", // libs from TeleService
                 "voip-common", // base_system
+                "wificond_compat_symlink_module", // base_system
             ] + select(release_flag("RELEASE_NATIVE_OMAPI"), {
                 true: [],
                 default: [
