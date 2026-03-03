@@ -304,7 +304,6 @@ PRODUCT_PACKAGES += \
     voip-common \
     vold \
     watchdogd \
-    wificond \
     wifi.rc \
     wm \
 # LINT.ThenChange(/target/product/generic/Android.bp)
@@ -432,6 +431,13 @@ PRODUCT_PACKAGES += \
 # are no longer supported for dessert upgrades).
 PRODUCT_PACKAGES += \
     hwservicemanager_compat_symlink_module \
+
+# wificond is now installed on system_ext, but some callers may still expect
+# it to be installed on system. This symlink can be removed once we are sure
+# that there are no devices using wificond.
+PRODUCT_PACKAGES += \
+    wificond_compat_symlink_module \
+
 # Prevent timeouts to check availability of hwservicmanager during boot
 PRODUCT_SYSTEM_PROPERTIES += hwservicemanager.always_sets_disabled=true
 

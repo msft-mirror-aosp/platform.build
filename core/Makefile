@@ -7950,6 +7950,14 @@ ifneq (,$(GENERATED_FW_IMAGE))
 $(call dist-for-goals,dist_files,$(GENERATED_FW_IMAGE):${TARGET_PRODUCT}-firmware.img)
 endif
 
+# What is passed into recovery image creation.
+DESKTOP_FIRMWARE_MODULE_RECOVERY := $(GENERATED_FW_IMAGE)
+
+# Only set this after dist call.
+ifneq (,$(DESKTOP_FIRMWARE_MODULE_RECOVERY_INTERCEPT))
+DESKTOP_FIRMWARE_MODULE_RECOVERY := $(call module-built-files,$(DESKTOP_FIRMWARE_MODULE_RECOVERY_INTERCEPT))
+endif
+
 # -----------------------------------------------------------------
 # Desktop generated partition image.
 GENERATED_PARTITION_IMAGE := $(call module-built-files,gen-partition-image)
@@ -7979,20 +7987,20 @@ endif # PACK_DESKTOP_FILESYSTEM_IMAGES
 # -----------------------------------------------------------------
 # Desktop pack recovery image hook.
 ifeq ($(BOARD_USES_DESKTOP_RECOVERY_IMAGE),true)
-ifeq ($(GENERATED_FW_IMAGE),)
+ifeq ($(DESKTOP_FIRMWARE_MODULE_RECOVERY),)
 $(error The desktop recovery image requires AP and EC firmware. \
 	Please ensure RELEASE_FIRMWARE_$(call to-upper,$(TARGET_PRODUCT))_VERSION is set, \
 	or disable the recovery image by specifying \
 	PRODUCT_BUILD_DESKTOP_RECOVERY_IMAGE := false)
-endif # ($(GENERATED_FW_IMAGE),)
+endif # ($(DESKTOP_FIRMWARE_MODULE_RECOVERY),)
 PACK_RECOVERY_IMAGE_TARGET := $(PRODUCT_OUT)/android-desktop_recovery_image.bin
-PACK_RECOVERY_IMAGE_ARGS := --noarchive --recovery --firmware $(GENERATED_FW_IMAGE) --partition-image $(GENERATED_PARTITION_IMAGE)
+PACK_RECOVERY_IMAGE_ARGS := --noarchive --recovery --firmware $(DESKTOP_FIRMWARE_MODULE_RECOVERY) --partition-image $(GENERATED_PARTITION_IMAGE)
 
 ifneq (,$(strip $(PACK_RECOVERY_IMAGE_EXPERIMENTAL)))
 PACK_RECOVERY_IMAGE_ARGS += --experimental
 endif # PACK_RECOVERY_IMAGE_EXPERIMENTAL
 
-$(PACK_RECOVERY_IMAGE_TARGET): $(PACK_IMAGE_DEPS) $(PRODUCT_OUT)/recovery-kernel $(GENERATED_FW_IMAGE) $(GENERATED_PARTITION_IMAGE)
+$(PACK_RECOVERY_IMAGE_TARGET): $(PACK_IMAGE_DEPS) $(PRODUCT_OUT)/recovery-kernel $(DESKTOP_FIRMWARE_MODULE_RECOVERY) $(GENERATED_PARTITION_IMAGE)
 	$(PACK_IMAGE_SCRIPT) --out_dir $(PRODUCT_OUT) $(PACK_RECOVERY_IMAGE_ARGS) $(PACK_IMAGE_ARGS)
 
 PACKED_RECOVERY_IMAGE_ARCHIVE_TARGET := $(PACK_RECOVERY_IMAGE_TARGET).zst
