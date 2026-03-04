@@ -188,4 +188,11 @@
         <install-in user-type="SYSTEM" />
         <install-in user-type="FULL" />
     </install-in-user-type>
+
+    <!-- MtpDocumentsProvider (MtpService) -->
+    <install-in-user-type package="com.android.mtp">
+        <install-in user-type="SYSTEM" />
+        <install-in user-type="FULL" />
+        <install-in user-type="android.os.usertype.profile.MANAGED" />
+    </install-in-user-type>
 </config>
