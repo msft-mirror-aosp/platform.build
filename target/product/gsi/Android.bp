@@ -107,6 +107,7 @@ android_filesystem_defaults {
 
         // telephony packages
         "CarrierConfig",
+        "preinstalled-packages-gsi-system-ext.xml",
 
         ///////////////////////////////////////////
         // gsi_release
