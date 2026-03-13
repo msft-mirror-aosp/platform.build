@@ -1006,6 +1006,18 @@ def ProcessTargetFileEntries(input_tf_zip: zipfile.ZipFile, output_tf_dir: str, 
         ResignTrustyVM(image, desktop_key, desktop_algorithm,
             misc_info, extra_args)
         WriteOutputFile(output_tf_dir, image.name, filename)
+    elif fnmatch.fnmatch(filename, "SYSTEM_EXT/etc/vm/trusty_vm/trusty_*.elf"):
+      payload_key = OPTIONS.extra_apex_payload_keys["com.google.android.virt.apex"]
+      if payload_key == 'PRESIGNED':
+        # TODO(b/491364851): Ensure Trusty VM is signed with microdroid vbmeta key
+        print("Skip re-signing %s: virt APEX is PRESIGNED" % filename)
+      else:
+        with tempfile.NamedTemporaryFile() as image:
+          image.write(data)
+          image.flush()
+          ResignTrustyVM(image, payload_key, "SHA256_RSA4096",
+              misc_info)
+          WriteOutputFile(output_tf_dir, image.name, filename)
     # A non-APK file; copy it verbatim.
     else:
       WriteOutputData(output_tf_dir, out_info, data)
