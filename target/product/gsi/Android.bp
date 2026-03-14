@@ -139,6 +139,11 @@ android_filesystem_defaults {
         "frameworks-base-overlays",
 
         ///////////////////////////////////////////
+        // PRODUCT_PACKAGES_SHIPPING_API_LEVEL_33
+        ///////////////////////////////////////////
+        "wificond",
+
+        ///////////////////////////////////////////
         // PRODUCT_PACKAGES_SHIPPING_API_LEVEL_34
         ///////////////////////////////////////////
         "hwservicemanager",
