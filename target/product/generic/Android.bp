@@ -1154,6 +1154,11 @@ system_image_defaults {
                 ],
                 default: [
                 ],
+            }) + select(release_flag("RELEASE_NPUMANAGER_MODULE"), {
+                true: [
+                    "libnpumanager", // base_system (RELEASE_NPUMANAGER_MODULE)
+                ],
+                default: [],
             }),
         },
     },
