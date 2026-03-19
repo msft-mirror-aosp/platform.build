@@ -573,7 +573,6 @@ system_image_defaults {
         "cppreopts.sh", // generic_system
         "credstore",
         "debuggerd",
-        "default-permissions-virtualization.xml",
         "device_config",
         "dirty-image-objects",
         "dmctl",
@@ -603,6 +602,7 @@ system_image_defaults {
         "gsid",
         "heapprofd",
         "hid",
+        "hidservice",
         "hiddenapi-package-whitelist.xml", // from runtime_libart
         "idc_data",
         "idmap2",
