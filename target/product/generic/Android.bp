@@ -602,6 +602,7 @@ system_image_defaults {
         "gsid",
         "heapprofd",
         "hid",
+        "hidservice",
         "hiddenapi-package-whitelist.xml", // from runtime_libart
         "idc_data",
         "idmap2",

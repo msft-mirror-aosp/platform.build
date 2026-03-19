@@ -121,6 +121,7 @@ PRODUCT_PACKAGES += \
     gsi_tool \
     heapprofd \
     heapprofd_client \
+    hidservice \
     gatekeeperd \
     gpuservice \
     hid \
