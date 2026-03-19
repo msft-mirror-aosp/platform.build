@@ -15,6 +15,9 @@
 -->
 <!-- System packages to preinstall on all devices with handheld_system, per user type.
      Documentation at frameworks/base/data/etc/preinstalled-packages-platform.xml
+
+     The packages below are added to $PRODUCT_PACKAGES in
+     build/make/target/product/handheld_system.mk.
 -->
 <config>
     <!-- Files (DocumentsUI) -->
