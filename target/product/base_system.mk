@@ -91,7 +91,6 @@ PRODUCT_PACKAGES += \
     CtsShimPrebuilt \
     CtsShimPrivPrebuilt \
     debuggerd\
-    default-permissions-virtualization.xml \
     device_config \
     dmctl \
     dnsmasq \
