@@ -1007,7 +1007,13 @@ def ProcessTargetFileEntries(input_tf_zip: zipfile.ZipFile, output_tf_dir: str, 
             misc_info, extra_args)
         WriteOutputFile(output_tf_dir, image.name, filename)
     elif fnmatch.fnmatch(filename, "SYSTEM_EXT/etc/vm/trusty_vm/trusty_*.elf"):
-      payload_key = OPTIONS.extra_apex_payload_keys["com.google.android.virt.apex"]
+      payload_key = OPTIONS.extra_apex_payload_keys.get("com.google.android.virt.apex") or \
+                    OPTIONS.extra_apex_payload_keys.get("com.android.virt.apex")
+      assert payload_key is not None, \
+          ("No payload key found for com.google.android.virt.apex or "
+           "com.android.virt.apex in OPTIONS.extra_apex_payload_keys "
+           "for Trusty VM: {}".format(filename))
+
       if payload_key == 'PRESIGNED':
         # TODO(b/491364851): Ensure Trusty VM is signed with microdroid vbmeta key
         print("Skip re-signing %s: virt APEX is PRESIGNED" % filename)
