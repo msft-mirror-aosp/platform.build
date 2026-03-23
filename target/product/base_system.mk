@@ -32,6 +32,7 @@ PRODUCT_PACKAGES += \
     android.test.base \
     android.test.mock \
     android.test.runner \
+    aoad \
     apexd \
     apexd.mainline_patch_level_2 \
     app-lock-exempt.xml \
