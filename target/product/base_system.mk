@@ -64,6 +64,7 @@ PRODUCT_PACKAGES += \
     com.android.bt \
     com.android.configinfrastructure \
     com.android.conscrypt \
+    com.android.crashrecovery \
     com.android.devicelock \
     com.android.extservices \
     com.android.healthfitness \
@@ -322,17 +323,6 @@ PRODUCT_PACKAGES += \
 ifneq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
   PRODUCT_PACKAGES += \
       framework-telecom
-
-endif
-
-# When we release crashrecovery module
-ifeq ($(RELEASE_CRASHRECOVERY_MODULE),true)
-  PRODUCT_PACKAGES += \
-        com.android.crashrecovery \
-
-else
-  PRODUCT_PACKAGES += \
-    framework-platformcrashrecovery \
 
 endif
 
