@@ -513,7 +513,7 @@ $(call soong_config_set,berberis,target_native_bridge_abi,$(TARGET_NATIVE_BRIDGE
 
 # Flags for SDK packages
 $(call soong_config_set,sdk,PLATFORM_VERSION,$(PLATFORM_VERSION))
-$(call soong_config_set,sdk,PLATFORM_SDK_VERSION,$(subst ",,$(PLATFORM_SDK_VERSION_FULL)))
+$(call soong_config_set,sdk,PLATFORM_SDK_VERSION,$(PLATFORM_SDK_VERSION_FULL))
 $(call soong_config_set,sdk,PLATFORM_SDK_EXTENSION_VERSION,$(PLATFORM_SDK_EXTENSION_VERSION))
 $(call soong_config_set,sdk,PLATFORM_IS_BASE_SDK,$(if $(filter $(PLATFORM_SDK_EXTENSION_VERSION),$(PLATFORM_BASE_SDK_EXTENSION_VERSION)),true,false))
 $(call soong_config_set,sdk,PLATFORM_VERSION_CODENAME,$(subst REL,,$(PLATFORM_VERSION_CODENAME)))
