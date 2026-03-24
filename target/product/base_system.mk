@@ -662,6 +662,3 @@ $(call inherit-product,$(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 $(call soong_config_set, bionic, large_system_property_node, $(RELEASE_LARGE_SYSTEM_PROPERTY_NODE))
 $(call soong_config_set, Aconfig, read_from_new_storage, $(RELEASE_READ_FROM_NEW_STORAGE))
-
-# TODO(b/465963767): Remove after updating ARSP code silo
-$(call soong_config_set, av_audio_aidl, interface_v2_landed, true)
