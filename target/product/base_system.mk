@@ -230,6 +230,7 @@ PRODUCT_PACKAGES += \
     lshal \
     mdnsd \
     mediacodec.policy \
+    mediacodeclist_generator \
     mediaextractor \
     media_profiles_V1_0.dtd \
     mediaserver \
