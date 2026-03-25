@@ -105,6 +105,6 @@ prebuilt_etc {
 prebuilt_etc {
     name: "preinstalled-packages-base-product.xml",
     sub_dir: "sysconfig",
-    system_ext_specific: true,
+    product_specific: true,
     src: "preinstalled-packages-base-product.xml",
 }
