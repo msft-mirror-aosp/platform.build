@@ -387,7 +387,8 @@ endif
 
 ifeq ($(RELEASE_NPUMANAGER_MODULE),true)
     PRODUCT_PACKAGES += \
-       com.android.npumanager
+       com.android.npumanager \
+       libnpumanager
 endif
 
 ifeq ($(RELEASE_WEBAPP_MODULE),true)
