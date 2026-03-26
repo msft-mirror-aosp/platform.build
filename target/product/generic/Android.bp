@@ -426,7 +426,7 @@ android_filesystem_defaults {
         // media_product
         ///////////////////////////////////////////
         "webview",
-
+        "preinstalled-packages-media-product.xml",
         ///////////////////////////////////////////
         // base_product
         ///////////////////////////////////////////
