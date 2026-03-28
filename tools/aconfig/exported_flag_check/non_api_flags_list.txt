@@ -112,7 +112,6 @@ android.os.allow_thermal_hal_skin_forecast
 android.os.android_os_build_vanilla_ice_cream
 android.os.battery_saver_supported_check_api
 android.os.network_time_uses_shared_memory
-android.os.profiling.anomaly.flags.anomaly_detector_core_c
 android.os.profiling.persist_queue
 android.os.profiling.redaction_enabled
 android.permission.flags.allow_host_permission_dialogs_on_virtual_devices
