@@ -3147,10 +3147,16 @@ $(INTERNAL_VENDOR_RAMDISK_RECOVERY_MEDIA_TARGET): $(MKBOOTFS) $(CUSTOM_RECOVERY_
 	$(hide) if [ -n "$(INTERNAL_VENDOR_RAMDISK_TARGET)" ]; then \
 	    $(LZ4) -d -c $(INTERNAL_VENDOR_RAMDISK_TARGET) | (cd $(PRIVATE_STAGING_DIR) && cpio -i -u); \
 	fi
-	$(hide) $(foreach fragment,$(INTERNAL_VENDOR_RAMDISK_FRAGMENT_TARGETS), \
-	    $(LZ4) -d -c $(fragment) | (cd $(PRIVATE_STAGING_DIR) && cpio -i -u); \
-	)
-	$(hide) mkdir -p $(PRIVATE_STAGING_DIR)/system/bin $(PRIVATE_STAGING_DIR)/vendor/etc/init
+	$(hide) if [ -n "$(INTERNAL_VENDOR_RAMDISK_RECOVERY_BASE)" ]; then \
+	    $(LZ4) -d -c $(INTERNAL_VENDOR_RAMDISK_RECOVERY_BASE) | (cd $(PRIVATE_STAGING_DIR) && cpio -i -u); \
+	fi
+	# Purge large unnecessary files from the merged ramdisk to fit in 32MB
+	$(hide) rm -f $(PRIVATE_STAGING_DIR)/system/bin/adbd
+	$(hide) rm -f $(PRIVATE_STAGING_DIR)/system/bin/fastbootd
+	$(hide) rm -f $(PRIVATE_STAGING_DIR)/system/bin/strace
+	$(hide) rm -rf $(PRIVATE_STAGING_DIR)/res/images
+
+	$(hide) mkdir -p $(PRIVATE_STAGING_DIR)/system/bin $(PRIVATE_STAGING_DIR)/system/lib64 $(PRIVATE_STAGING_DIR)/vendor/etc/init
 	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/system/bin/recovery
 	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/system/bin/recovery_media
 	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_RC) $(PRIVATE_STAGING_DIR)/vendor/etc/init/recovery_media.rc
