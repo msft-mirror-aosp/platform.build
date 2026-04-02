@@ -3206,7 +3206,8 @@ $(INSTALLED_RECOVERY_MEDIA_TARGET): $(MKEROFS) $(AVBTOOL) $(INSTALLED_BOOTIMAGE_
 	$(AVBTOOL) make_vbmeta_image \
 	    --rollback_index $(if $(BOARD_AVB_ROLLBACK_INDEX),$(BOARD_AVB_ROLLBACK_INDEX),0) \
 	    --output $(PRIVATE_STAGING_DIR)/vbmeta \
-	    --algorithm $(BOARD_AVB_ALGORITHM) --key $(BOARD_AVB_KEY_PATH) \
+	    --algorithm $(if $(BOARD_AVB_RECOVERY_MEDIA_ALGORITHM),$(BOARD_AVB_RECOVERY_MEDIA_ALGORITHM),$(BOARD_AVB_ALGORITHM)) \
+	    --key $(if $(BOARD_AVB_RECOVERY_MEDIA_KEY_PATH),$(BOARD_AVB_RECOVERY_MEDIA_KEY_PATH),$(BOARD_AVB_KEY_PATH)) \
 	    --include_descriptors_from_image $(INSTALLED_BOOTIMAGE_TARGET) \
 	    --include_descriptors_from_image $(INSTALLED_INIT_BOOT_IMAGE_TARGET) \
 	    --include_descriptors_from_image $(INSTALLED_VENDOR_BOOT_RECOVERY_MEDIA_TARGET) \
