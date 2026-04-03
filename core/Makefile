@@ -3156,17 +3156,17 @@ $(INTERNAL_VENDOR_RAMDISK_RECOVERY_MEDIA_TARGET): $(MKBOOTFS) $(CUSTOM_RECOVERY_
 	$(hide) rm -f $(PRIVATE_STAGING_DIR)/system/bin/strace
 	$(hide) rm -rf $(PRIVATE_STAGING_DIR)/res/images
 
-	$(hide) mkdir -p $(PRIVATE_STAGING_DIR)/system/bin $(PRIVATE_STAGING_DIR)/system/lib64 $(PRIVATE_STAGING_DIR)/vendor/etc/init
+	$(hide) mkdir -p $(PRIVATE_STAGING_DIR)/system/bin $(PRIVATE_STAGING_DIR)/vendor/bin $(PRIVATE_STAGING_DIR)/system/lib64 $(PRIVATE_STAGING_DIR)/vendor/etc/init
 	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/system/bin/recovery
-	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/system/bin/recovery_media
+	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/vendor/bin/recovery_media
 	$(hide) cp -f $(CUSTOM_RECOVERY_MEDIA_RC) $(PRIVATE_STAGING_DIR)/vendor/etc/init/recovery_media.rc
 
 	$(hide) cp -f $(MEDIA_INSTALLER_DEPS) $(PRIVATE_STAGING_DIR)/system/bin/
 
 	$(hide) if [ -d $(PRIVATE_STAGING_DIR)/first_stage_ramdisk ]; then \
-	    mkdir -p $(PRIVATE_STAGING_DIR)/first_stage_ramdisk/system/bin; \
+	    mkdir -p $(PRIVATE_STAGING_DIR)/first_stage_ramdisk/system/bin $(PRIVATE_STAGING_DIR)/first_stage_ramdisk/vendor/bin; \
 	    cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/first_stage_ramdisk/system/bin/recovery; \
-	    cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/first_stage_ramdisk/system/bin/recovery_media; \
+	    cp -f $(CUSTOM_RECOVERY_MEDIA_BINARY) $(PRIVATE_STAGING_DIR)/first_stage_ramdisk/vendor/bin/recovery_media; \
 	fi
 	$(hide) $(MKBOOTFS) $(PRIVATE_STAGING_DIR) | $(COMPRESSION_COMMAND) > $@
 
