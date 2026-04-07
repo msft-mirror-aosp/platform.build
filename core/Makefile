@@ -3238,7 +3238,7 @@ $(PRODUCT_OUT)/recovery-kernel: $(INSTALLED_RECOVERY_MEDIA_TARGET)
 .PHONY: recovery-media-image
 recovery-media-image: $(INSTALLED_RECOVERY_MEDIA_TARGET) $(PRODUCT_OUT)/recovery-kernel
 
-$(call dist-for-goals, recovery-media-image, $(INSTALLED_RECOVERY_MEDIA_TARGET))
+$(call dist-for-goals,dist_files,$(INSTALLED_RECOVERY_MEDIA_TARGET))
 
 # Ensure the packing script depends on our dynamic recovery image
 $(PACK_RECOVERY_IMAGE_TARGET): $(INSTALLED_RECOVERY_MEDIA_TARGET)
