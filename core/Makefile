@@ -288,6 +288,10 @@ endif
 endif
 endif
 
+ifeq ($(BOARD_USES_PVMFWIMAGE),true)
+INSTALLED_PVMFWIMAGE_TARGET := $(PRODUCT_OUT)/pvmfw.img
+endif
+
 # Do this early because sysprop.mk depends on BUILT_KERNEL_VERSION_FILE_FOR_UFFD_GC.
 ifeq (default,$(ENABLE_UFFD_GC))
 BUILT_KERNEL_VERSION_FILE_FOR_UFFD_GC := $(OUT_DIR)/soong/dexpreopt/kernel_version_for_uffd_gc.txt
@@ -4676,7 +4680,6 @@ ifeq ($(BOARD_USES_PVMFWIMAGE),true)
 .PHONY: pvmfwimage
 pvmfwimage: $(INSTALLED_PVMFWIMAGE_TARGET)
 
-INSTALLED_PVMFWIMAGE_TARGET := $(PRODUCT_OUT)/pvmfw.img
 INSTALLED_PVMFW_EMBEDDED_AVBKEY_TARGET := $(PRODUCT_OUT)/pvmfw_embedded.avbpubkey
 INSTALLED_PVMFW_BINARY_TARGET := $(call module-target-built-files,pvmfw_bin)
 INTERNAL_PVMFWIMAGE_FILES := $(call module-target-built-files,pvmfw_img)
